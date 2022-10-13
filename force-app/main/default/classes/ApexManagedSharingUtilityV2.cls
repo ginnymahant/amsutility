@@ -150,7 +150,12 @@ public without sharing class ApexManagedSharingUtilityV2 {
                 return;
 
         if ( smartshare ) {
-            if ( mapOfAllSharingRecordsToInsert.keySet().size() > MAX_COUNT_OF_SHARE_OBJECTS_TO_PROVIDE_ACCESS || mapOfAllSharingRecordsToInsert.values().size() > MAX_COUNT_OF_SHARE_RECORDS_TO_CREATE ) {
+            Integer totalShareRecords = 0;
+            for ( String key : mapOfAllSharingRecordsToInsert.keySet() ) {
+                if ( mapOfAllSharingRecordsToInsert.get(key) != null )
+                totalShareRecords = totalShareRecords + mapOfAllSharingRecordsToInsert.get(key).size() ;
+            }
+            if ( mapOfAllSharingRecordsToInsert.keySet().size() > MAX_COUNT_OF_SHARE_OBJECTS_TO_PROVIDE_ACCESS || totalShareRecords > MAX_COUNT_OF_SHARE_RECORDS_TO_CREATE ) {
                 QueueableAMS_ProvideAccess jobToShareRecords = new QueueableAMS_ProvideAccess(mapOfAllSharingRecordsToInsert);
                 System.enqueueJob(jobToShareRecords);
             }
