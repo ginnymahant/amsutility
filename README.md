@@ -96,3 +96,4 @@ TODP - Feature To Include
 3. Clear the map at the end in shareRecord.
 4. Clear the map at the end in revokeAllAccess.
 5. There should be a method to support bulk revoking of access followed by providing access in bulk. The method can invoke a new Queueable which will be auto-chained and its execute method will include logic inside execute methods of QueueableAMS_RevokeAccess and QueueableAMS_RevokeAccess.
+6. An email notification to be sent at the end of Queueable jobs that provide access and revoke access.The email notification is configurable and can be sent to a list of users configured in a custom setting, this email notification can be switched off and on as well.
