@@ -10,11 +10,13 @@ Apex Managed Sharing utility has been developed so it can be used to -
 
 Following feature of the utility make it easy to use in code -
 
-  Singleton Pattern so can be used across multiple classes without needing to pass references. 1 class – 2 methods for sharing and revoking each
+  Utilize utility from code - Singleton Pattern so can be used across multiple classes without needing to pass references. 1 class – 2 methods for sharing and revoking each
 
-  Can be invoked as an Apex Action by flows (WIP)
+  Utilize utility from flows - Can be invoked as an Apex Action by flows (WIP)
 
-  Stop switch for bulk mode sharing and revoking of access incase something goes wrong
+  Configureable Stop switch for bulk mode sharing and revoking of access incase something goes wrong
+
+Source Code - 
 
   This utility consists of four apex classes, a custom metadata and a custom setting - 
 
@@ -90,7 +92,7 @@ apexSharingUtility.addToListOfRecordsForRevokingAccess( ‘My_CustomObject2__c',
 apexSharingUtility.revokeAllAccess('Failure Message',TRUE);
 /*-----------------------------------------------------------------------CODE--------------------------------------------------------------------------------*/
 
-TODP - Feature To Include 
+TO DO - Feature To Include 
 1. Create method to update access of users to records from Read To Edit. This will be similar to revokeAllAccess method, instead of deleting this method will update share records.
 2. Create method to downgrade access of users to certain records from Edit To Read.This will be similar to revokeAllAccess method, instead of deleting this method will update share records.
 3. Clear the map at the end in shareRecord.
