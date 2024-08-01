@@ -101,4 +101,58 @@ public with sharing class ApexManagedSharingUtilTest {
         List<OpportunityShare> AccountShareList = [SELECT Id FROM OpportunityShare WHERE userOrGroupId = :stdUser.Id];
         Assert.areEqual(1,AccountShareList.size(), 'One Opportunity Share record for one User found as expected.');
     }
+
+    @isTest
+    public static void testRevokingAllAccess() {
+
+        User stdUser = [SELECT Id FROM User WHERE Profile.name = 'Standard User' AND isActive = true LIMIT 1];
+        Account accRec = [SELECT Id FROM Account LIMIT 1];
+        Opportunity oppRec = [SELECT Id FROM Opportunity LIMIT 1];
+        Map<Id, Set<Id>> mapOfUserIdAndAccRecordIds = new Map<Id, Set<Id>> () ; 
+        mapOfUserIdAndAccRecordIds.put(stdUser.Id , new Set<Id> {accRec.Id} );
+        Map<Id, Set<Id>> mapOfUserIdAndOppRecordIds = new Map<Id, Set<Id>> () ; 
+        mapOfUserIdAndOppRecordIds.put(stdUser.Id , new Set<Id> { oppRec.Id } );
+
+        ApexManagedSharingUtilityV2 amsUtil = ApexManagedSharingUtilityV2.getInstance();
+        amsUtil.buildAccountShareRecords('Edit', 'Edit', 'Edit', mapOfUserIdAndAccRecordIds);
+        amsUtil.buildShareRecords('Opportunity', 'None', 'Edit', mapOfUserIdAndOppRecordIds);
+        amsUtil.shareRecords( 'Sharing failed during test', false );
+
+        List<AccountShare> AccountShareList = [SELECT Id FROM AccountShare WHERE userOrGroupId = :stdUser.Id];
+        Assert.areEqual( 1, AccountShareList.size(), 'One Account Share record for one User found as expected.');
+        List<OpportunityShare> OppShareList = [SELECT Id FROM OpportunityShare WHERE userOrGroupId = :stdUser.Id];
+        Assert.areEqual(1,OppShareList.size(), 'One Opportunity Share record for one User found as expected.');
+
+        Test.startTest();
+            amsUtil.addToListOfRecordsForRevokingAccess('Account', mapOfUserIdAndAccRecordIds);
+            amsUtil.addToListOfRecordsForRevokingAccess('Account', mapOfUserIdAndOppRecordIds);
+            amsUtil.revokeAllAccess( 'Sharing failed during test', false );
+        Test.stopTest();
+        AccountShareList = [SELECT Id FROM AccountShare WHERE userOrGroupId = :stdUser.Id];
+        Assert.areEqual( 0, AccountShareList.size(), 'Account access revoked for one User as expected.');
+        OppShareList = [SELECT Id FROM OpportunityShare WHERE userOrGroupId = :stdUser.Id];
+        Assert.areEqual(0,OppShareList.size(), 'Opportunity access revoked for one User as expected.');
+    }
+
+    @isTest
+    public static void testRevokingAccountAccess() {
+
+        User stdUser = [SELECT Id FROM User WHERE Profile.name = 'Standard User' AND isActive = true LIMIT 1];
+        Account accRec = [SELECT Id FROM Account LIMIT 1];
+        Map<Id, Set<Id>> mapOfUserIdAndRecordIds = new Map<Id, Set<Id>> () ; 
+        mapOfUserIdAndRecordIds.put(stdUser.Id , new Set<Id> {accRec.Id} );
+        ApexManagedSharingUtilityV2 amsUtil = ApexManagedSharingUtilityV2.getInstance();
+
+        amsUtil.buildAccountShareRecords('Edit', 'Edit', 'Edit', mapOfUserIdAndRecordIds);
+        amsUtil.shareRecords( 'Sharing failed during test', false );
+
+        List<AccountShare> AccountShareList = [SELECT Id FROM AccountShare WHERE userOrGroupId = :stdUser.Id];
+        Assert.areEqual( 1, AccountShareList.size(), 'One Account Share record for one User found as expected.');
+        Test.startTest();
+            amsUtil.addToListOfRecordsForRevokingAccess('Account', mapOfUserIdAndRecordIds);
+            amsUtil.revokeAccessForObject( 'Account','Sharing failed during test' );
+        Test.stopTest();
+        AccountShareList = [SELECT Id FROM AccountShare WHERE userOrGroupId = :stdUser.Id];
+        Assert.areEqual( 0, AccountShareList.size(), 'Account access revoked for one User as expected.');
+    }
 }
