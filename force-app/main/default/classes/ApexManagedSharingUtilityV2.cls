@@ -8,9 +8,13 @@ public without sharing class ApexManagedSharingUtilityV2 {
 
     //Declare members
     private static ApexManagedSharingUtilityV2 instance = null;
-    private Boolean sendFailureNotificationEmailsSwitch = FALSE ;
+    private Boolean SEND_FAILURE_EMAIL_NOTIFICATION = FALSE ;
     private Map <String , List<SObject>> mapOfAllSharingRecordsToInsert = new Map <String , List<SObject>>();
     private Map <String , Map <Id, Set<Id>>> mapOfAllUserAccessDetailsPerObject = new Map <String , Map <Id, Set<Id>>> ();
+    private String OWD_ACCOUNT;
+    private String OWD_CASE;
+    private String OWD_OPPORTUNITY;
+    private String OWD_CONTACT;
 
     //Declare Constants, values of these should not be changed ideally. Some of the constants values may be changed on test environments for testing purpose.
     private static final Integer MAX_COUNT_OF_SHARE_RECORDS_TO_CREATE = 9999 ; //This value should be same as the value of QueueableAMS_ProvideAccess.COUNT_OF_RECS_TO_INSERT. 
@@ -24,7 +28,15 @@ public without sharing class ApexManagedSharingUtilityV2 {
 
         //Read Custom Setting for controlling sending of failure email during sharing/revoking of access
         ApexManagedSharingControlSetting__c setting = [ SELECT Send_Failure_Emails__c FROM ApexManagedSharingControlSetting__c LIMIT 1] ;
-        sendFailureNotificationEmailsSwitch = setting.Send_Failure_Emails__c ;
+        SEND_FAILURE_EMAIL_NOTIFICATION = setting.Send_Failure_Emails__c ;
+
+        Organization org = [ SELECT Id, DefaultAccountAccess, DefaultContactAccess, DefaultCaseAccess, DefaultOpportunityAccess FROM Organization ];
+        OWD_ACCOUNT = org.DefaultAccountAccess;
+        OWD_CASE = org.DefaultCaseAccess;
+        OWD_CONTACT = org.DefaultContactAccess;
+        OWD_OPPORTUNITY = org.DefaultOpportunityAccess;
+
+
     }
     /**
      * @description This method generates and returns an instance of this class as per Singleton Pattern
@@ -97,10 +109,14 @@ public without sharing class ApexManagedSharingUtilityV2 {
      * NOTE: 
      */
 
-    public void buildAccountShareRecords( String accountAccessLevel , String caseAccessLevel ,String  opportunityAccessLevel , Map<Id, Set<Id>> mapOfUserIdAndRecordIds) {
+    public void buildAccountShareRecords( String accountAccessLevel , String caseAccessLevel , String  opportunityAccessLevel , String  contactAccessLevel , Map<Id, Set<Id>> mapOfUserIdAndRecordIds) {
 
-        if( String.isBlank(accountAccessLevel) || String.isBlank(caseAccessLevel) || String.isBlank(opportunityAccessLevel) || mapOfUserIdAndRecordIds == null || mapOfUserIdAndRecordIds.size() == 0 )
+        if( String.isBlank(accountAccessLevel) || mapOfUserIdAndRecordIds == null || mapOfUserIdAndRecordIds.size() == 0 )
             return ;
+        if ( !accountAccessLevel.equalsIgnoreCase('ALL') && String.isBlank(caseAccessLevel) && String.isBlank(opportunityAccessLevel) )  
+            return;  
+        if ( !OWD_CONTACT.equalsIgnoreCase('ControlledByParent') && String.isBlank(contactAccessLevel) )  
+            return;     
         
         //Ensure that the object in nameOfObject is valid before creating shares 
         ApexManagedShareObjects apexShareObjects = ApexManagedShareObjects.getInstance();
@@ -115,8 +131,13 @@ public without sharing class ApexManagedSharingUtilityV2 {
                 SObject shareRec = shareObjectDetail.shareObjectType.newSObject();
                 shareRec.put('AccountId', recId);
                 shareRec.put('AccountAccessLevel', accountAccessLevel);
-                shareRec.put('CaseAccessLevel', caseAccessLevel);
-                shareRec.put('OpportunityAccessLevel', opportunityAccessLevel);
+                if (!accountAccessLevel.equalsIgnoreCase('ALL')) {
+                    shareRec.put('CaseAccessLevel', caseAccessLevel);
+                    shareRec.put('OpportunityAccessLevel', opportunityAccessLevel);
+                }
+                if (!OWD_CONTACT.equalsIgnoreCase('ControlledByParent')) {
+                    shareRec.put('ContactAccessLevel', contactAccessLevel);
+                }
                 shareRec.put('RowCause', 'Manual');
                 shareRec.put('UserOrGroupId', userId);
                 sharingRecords.add(shareRec); 
@@ -473,7 +494,7 @@ public without sharing class ApexManagedSharingUtilityV2 {
                 }
             }
             try {
-                if(sendErrorEmail && sendFailureNotificationEmailsSwitch )
+                if(sendErrorEmail && SEND_FAILURE_EMAIL_NOTIFICATION )
                     EmailService.sendEmailToApexEmailNotificationAddress(subject,body);
 
             } catch(Exception ex) {
@@ -517,7 +538,7 @@ public without sharing class ApexManagedSharingUtilityV2 {
                 }
             }
             try {
-                    if(sendErrorEmail  && sendFailureNotificationEmailsSwitch )
+                    if(sendErrorEmail  && SEND_FAILURE_EMAIL_NOTIFICATION )
                         EmailService.sendEmailToApexEmailNotificationAddress(subject,body);
 
             } catch(Exception ex) {

@@ -92,10 +92,11 @@ apexSharingUtility.addToListOfRecordsForRevokingAccess( ‘My_CustomObject2__c',
 apexSharingUtility.revokeAllAccess('Failure Message',TRUE);
 /*-----------------------------------------------------------------------CODE--------------------------------------------------------------------------------*/
 
-TO DO - Feature To Include 
-1. Create method to update access of users to records from Read To Edit. This will be similar to revokeAllAccess method, instead of deleting this method will update share records.
+TO DO - Features and Enhancements 
+1. Create method to elevate access of users to records from Read To Edit. This will be similar to revokeAllAccess method, instead of deleting this method will update share records.
 2. Create method to downgrade access of users to certain records from Edit To Read.This will be similar to revokeAllAccess method, instead of deleting this method will update share records.
 3. Clear the map at the end in shareRecord.
 4. Clear the map at the end in revokeAllAccess.
 5. There should be a method to support bulk revoking of access followed by providing access in bulk. The method can invoke a new Queueable which will be auto-chained and its execute method will include logic inside execute methods of QueueableAMS_RevokeAccess and QueueableAMS_RevokeAccess.
 6. An email notification to be sent at the end of Queueable jobs that provide access and revoke access.The email notification is configurable and can be sent to a list of users configured in a custom setting, this email notification can be switched off and on as well.
+7. Enhance utility to manage (provide and revoke) access to records for Queues and Public Groups

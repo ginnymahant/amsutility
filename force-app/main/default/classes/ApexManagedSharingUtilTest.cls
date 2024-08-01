@@ -42,7 +42,7 @@ public with sharing class ApexManagedSharingUtilTest {
         ApexManagedSharingUtilityV2 amsUtil = ApexManagedSharingUtilityV2.getInstance();
 
         Test.startTest();
-            amsUtil.buildAccountShareRecords('Edit', 'Edit', 'Edit', mapOfUserIdAndRecordIds);
+            amsUtil.buildAccountShareRecords('Edit', 'Edit', 'Edit', 'Edit',mapOfUserIdAndRecordIds);
             amsUtil.shareRecords( 'Sharing failed during test', false );
         Test.stopTest();
 
@@ -60,7 +60,7 @@ public with sharing class ApexManagedSharingUtilTest {
         ApexManagedSharingUtilityV2 amsUtil = ApexManagedSharingUtilityV2.getInstance();
 
         Test.startTest();
-            amsUtil.buildAccountShareRecords('Edit', 'Edit', 'Edit', mapOfUserIdAndRecordIds);
+            amsUtil.buildAccountShareRecords('Edit', 'Edit', 'Edit', 'Edit', mapOfUserIdAndRecordIds);
             amsUtil.shareRecords( 'Sharing failed during test', true ); // Set smartShare param to true
         Test.stopTest();
 
@@ -114,7 +114,7 @@ public with sharing class ApexManagedSharingUtilTest {
         mapOfUserIdAndOppRecordIds.put(stdUser.Id , new Set<Id> { oppRec.Id } );
 
         ApexManagedSharingUtilityV2 amsUtil = ApexManagedSharingUtilityV2.getInstance();
-        amsUtil.buildAccountShareRecords('Edit', 'Edit', 'Edit', mapOfUserIdAndAccRecordIds);
+        amsUtil.buildAccountShareRecords('Edit', 'Edit', 'Edit', 'Edit', mapOfUserIdAndAccRecordIds);
         amsUtil.buildShareRecords('Opportunity', 'Manual', 'Edit', mapOfUserIdAndOppRecordIds);
         amsUtil.shareRecords( 'Sharing failed during test', false );
 
@@ -143,7 +143,7 @@ public with sharing class ApexManagedSharingUtilTest {
         mapOfUserIdAndAccRecordIds.put(stdUser.Id , new Set<Id> {accRec.Id} );
 
         ApexManagedSharingUtilityV2 amsUtil = ApexManagedSharingUtilityV2.getInstance();
-        amsUtil.buildAccountShareRecords('Edit', 'Edit', 'Edit', mapOfUserIdAndAccRecordIds);
+        amsUtil.buildAccountShareRecords('Edit', 'Edit', 'Edit', 'Edit', mapOfUserIdAndAccRecordIds);
         amsUtil.shareRecords( 'Sharing failed during test', false );
 
         List<AccountShare> AccountShareList = [SELECT Id FROM AccountShare WHERE userOrGroupId = :stdUser.Id];
@@ -176,7 +176,7 @@ public with sharing class ApexManagedSharingUtilTest {
         mapOfUserIdAndRecordIds.put(stdUser.Id , new Set<Id> {accRec1.Id , accRec2.Id} );
 
         ApexManagedSharingUtilityV2 amsUtil = ApexManagedSharingUtilityV2.getInstance();
-        amsUtil.buildAccountShareRecords('Edit', 'Edit', 'Edit', mapOfUserIdAndRecordIds);
+        amsUtil.buildAccountShareRecords('Edit', 'Edit', 'Edit', 'Edit', mapOfUserIdAndRecordIds);
         amsUtil.shareRecords( 'Sharing failed during test', false );
 
         List<AccountShare> AccountShareList = [SELECT Id FROM AccountShare WHERE userOrGroupId = :stdUser.Id];

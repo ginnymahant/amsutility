@@ -7,8 +7,9 @@
  */
  
 public inherited sharing class QueueableAMS_ProvideAccess implements Queueable{
-
+    @TestVisible
     private Map<String, List<Sobject>> mapOfAllSharingRecordsToInsert;
+    @TestVisible
     private String nameOfObject = '' ;
     public static final Integer COUNT_OF_RECS_TO_INSERT = 9999;  // THIS VALUE MUST NOT EXCEED 10000 ELSE DML GovernorLimit will be hit and exception thrown, and the whole job will error out 
 
@@ -46,7 +47,7 @@ public inherited sharing class QueueableAMS_ProvideAccess implements Queueable{
             recordsForSharing = mapOfAllSharingRecordsToInsert_Temp.get(nameOfObject);
             if(recordsForSharing != null && recordsForSharing.size() > 0 ) {
                
-                List<SObject> shareRecords =  getRecordsToInsertFromMapOfAllSharingRecordsToInsertAndTrimMap (nameOfObject , recordsForSharing);
+                List<SObject> shareRecords =  trimMapAsPerChunkSize ( recordsForSharing);
                 ApexManagedSharingUtilityV2 apexSharingUtilityV2 = ApexManagedSharingUtilityV2.getInstance();
                 apexSharingUtilityV2.provideAccess(shareRecords , 'Sharing records of '+nameOfObject.toUpperCase());
             }
@@ -63,7 +64,7 @@ public inherited sharing class QueueableAMS_ProvideAccess implements Queueable{
      * @description This method sanitizes entries in mapOfAllSharingRecordsToInsert and removes any null values or data for objects not configured for sharing
      * @param : None
      */
-
+    @TestVisible
     private void santizeRecords() {
         Set<String> dirtyShare = new Set<String>();
         //Get instance of class which stores all share Object details for those objects that have been configured for Sharing in Custom Metadata
@@ -85,12 +86,12 @@ public inherited sharing class QueueableAMS_ProvideAccess implements Queueable{
     }
 
     /**
-     * @description This method chunks entries in mapOfAllSharingRecordsToInsert into a chuk=nk of size = COUNT_OF_RECS_TO_INSERT for each share object record 
+     * @description This method chunks entries in mapOfAllSharingRecordsToInsert into a chunk of size = COUNT_OF_RECS_TO_INSERT for each share object record 
      * @param : typeOfShareRecord Name of object configured for sharing
-     * @param : recordsToShare all entries from mapOfAllSharingRecordsToInsert for specified share object - typeOfShareRecord //TODO: This param is redundant and can be gotten rid of
+     * @param : recordsToShare all entries from mapOfAllSharingRecordsToInsert for specified share object -  
      */
-    
-    private List<SObject> getRecordsToInsertFromMapOfAllSharingRecordsToInsertAndTrimMap(String typeOfShareRecord , List<SObject> recordsToShare) {
+    @TestVisible
+    private List<SObject> trimMapAsPerChunkSize( List<SObject> recordsToShare) {
         
         if(recordsToShare == null || recordsToShare.size() == 0 ) 
             return null;
@@ -100,7 +101,7 @@ public inherited sharing class QueueableAMS_ProvideAccess implements Queueable{
 
         if( totalShareRecs <= COUNT_OF_RECS_TO_INSERT ) {
             shareRecsToInsert = recordsToShare;
-            mapOfAllSharingRecordsToInsert.remove(typeOfShareRecord);
+            mapOfAllSharingRecordsToInsert.remove(nameOfObject);
             return shareRecsToInsert ;
         }
         else if( totalShareRecs > COUNT_OF_RECS_TO_INSERT){
@@ -120,9 +121,9 @@ public inherited sharing class QueueableAMS_ProvideAccess implements Queueable{
             recordsToShare.addAll(recordsToShare_Temp);
                 
             if( recordsToShare != null && recordsToShare.size() > 0)
-                mapOfAllSharingRecordsToInsert.put(typeOfShareRecord , recordsToShare);
+                mapOfAllSharingRecordsToInsert.put(nameOfObject , recordsToShare);
             else 
-                mapOfAllSharingRecordsToInsert.remove(typeOfShareRecord);    
+                mapOfAllSharingRecordsToInsert.remove(nameOfObject);    
             return  shareRecsToInsert;
         }
         return null;                       
