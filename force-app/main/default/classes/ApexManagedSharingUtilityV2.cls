@@ -1,7 +1,7 @@
 /* Description: This is the main class for AMS Utility. For AMS Utility refer-https://generatekiwisaver.atlassian.net/wiki/spaces/SF/pages/1397358617/Apex+Managed+Sharing+Utility
  * Author: G Mahant (Davanti)
  * Created Date: 15 Mar 22  
- * Test : ApplicantTriggerHandlerTest
+ * Test : ApexManagedSharingUtilTest
  */
  
 public without sharing class ApexManagedSharingUtilityV2 {
@@ -26,7 +26,10 @@ public without sharing class ApexManagedSharingUtilityV2 {
         ApexManagedSharingControlSetting__c setting = [ SELECT Send_Failure_Emails__c FROM ApexManagedSharingControlSetting__c LIMIT 1] ;
         sendFailureNotificationEmailsSwitch = setting.Send_Failure_Emails__c ;
     }
-
+    /**
+     * @description This method generates and returns an instance of this class as per Singleton Pattern
+     * @param nameOfObject The name of the object for which records needs to be shared
+    */ 
     public static ApexManagedSharingUtilityV2 getInstance() {
 
         if(instance == null){
@@ -37,23 +40,23 @@ public without sharing class ApexManagedSharingUtilityV2 {
 
     /**
      * @description This method creates share records
-     * @param nameOfObject The name of the object for which records needs to be shared
+     * @param apiNameOfObject The name of the object for which records needs to be shared
      * @param rowCause The reason for sharing the record - its either apex defined or 'Manual'
      * @param accessLevel The level of access while sharing records
      * @param mapOfUserIdAndRecordIds A map containind User Ids of users that need access to records in respective Set<Id> 
      * NOTE: 
      */
 
-    public void buildShareRecords( String nameOfObject , String rowCause , String accessLevel , Map<Id, Set<Id>> mapOfUserIdAndRecordIds) {
+    public void buildShareRecords( String apiNameOfObject , String rowCause , String accessLevel , Map<Id, Set<Id>> mapOfUserIdAndRecordIds) {
 
         //Perform Null checks
-        if(String.isBlank(nameOfObject) || String.isBlank(rowCause) || String.isBlank(accessLevel) || mapOfUserIdAndRecordIds == null || mapOfUserIdAndRecordIds.size() == 0  || nameOfObject.tolowerCase() == 'account')
+        if(String.isBlank(apiNameOfObject) || String.isBlank(rowCause) || String.isBlank(accessLevel) || mapOfUserIdAndRecordIds == null || mapOfUserIdAndRecordIds.size() == 0  || apiNameOfObject.tolowerCase() == 'account')
             return ;
 
-        nameOfObject = nameOfObject.tolowerCase();
-        //Ensure that the object in nameOfObject is valid  i.e. it has been configured for sharing  
+            apiNameOfObject = apiNameOfObject.tolowerCase();
+        //Ensure that the object in apiNameOfObject is valid  i.e. it has been configured for sharing  
         ApexManagedShareObjects apexShareObjects = ApexManagedShareObjects.getInstance();
-        ApexManagedShareObjects.GenericShareObject shareObjectDetail = apexShareObjects.getTheShareObjectDetailsForObjectName(nameOfObject);
+        ApexManagedShareObjects.GenericShareObject shareObjectDetail = apexShareObjects.getTheShareObjectDetailsForObjectName(apiNameOfObject);
         if ( shareObjectDetail == null)
             return ;
 
@@ -65,7 +68,7 @@ public without sharing class ApexManagedSharingUtilityV2 {
                 SObject shareObjectRec = shareObjectDetail.shareObjectType.newSObject();
                 shareObjectRec.put(shareObjectDetail.idFieldName, recId);
                 shareObjectRec.put(shareObjectDetail.accessLevelFieldName, accessLevel);
-                shareObjectRec.put('RowCause', rowCause);
+                shareObjectRec.put('RowCause', apiNameOfObject.endsWith('__c') ? rowCause : 'Manual' );
                 shareObjectRec.put('UserOrGroupId', userId);
                 sharingRecords.add(shareObjectRec); 
             }     
@@ -74,15 +77,15 @@ public without sharing class ApexManagedSharingUtilityV2 {
             return ;
 
         List<SObject> shareRecs = new List<SObject>();
-        if ( mapOfAllSharingRecordsToInsert.get(nameOfObject) == null )
+        if ( mapOfAllSharingRecordsToInsert.get(apiNameOfObject) == null )
             shareRecs = sharingRecords;
         else
         {
-            shareRecs = mapOfAllSharingRecordsToInsert.get(nameOfObject);
+            shareRecs = mapOfAllSharingRecordsToInsert.get(apiNameOfObject);
             shareRecs.addAll(sharingRecords);
         } 
-        System.debug('The map of all sharing records is - '+ mapOfAllSharingRecordsToInsert);      
-        mapOfAllSharingRecordsToInsert.put( nameOfObject , shareRecs);
+         
+        mapOfAllSharingRecordsToInsert.put( apiNameOfObject , shareRecs);
     }  
     
     /**
