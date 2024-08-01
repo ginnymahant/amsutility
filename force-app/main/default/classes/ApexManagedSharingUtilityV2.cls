@@ -342,7 +342,7 @@ public without sharing class ApexManagedSharingUtilityV2 {
             Set<Id> recIds = mapOfAllUserAccessDetailsForObject.get((Id)(shareRecord.get('UserOrGroupId'))); 
             if ( recIds == null || recIds.size() == 0 )
                 continue;   
-            if( recIds.contains( (Id) shareRecord.get(shareObjectDetail.idFieldName)  ) && validateRowCause((String)shareRecord.get('RowCause')) )  {
+            if( recIds.contains( (Id) shareRecord.get(shareObjectDetail.idFieldName)  ) && checkForNonSystemRowCauses((String)shareRecord.get('RowCause')) )  {
                     revokeSharing.add(shareRecord);
             }       
         } 
@@ -415,7 +415,7 @@ public without sharing class ApexManagedSharingUtilityV2 {
      *  
      */
 
-    private Boolean validateRowCause( String rowCause ) {
+    private Boolean checkForNonSystemRowCauses( String rowCause ) {
         if( rowCause.equalsIgnoreCase( 'ImplicitChild' ) )
             return FALSE;
         if( rowCause.equalsIgnoreCase( 'ImplicitParent' ) )
