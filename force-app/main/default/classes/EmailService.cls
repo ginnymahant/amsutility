@@ -16,13 +16,8 @@ public inherited sharing class EmailService {
                 }                  
                 
                 if(toAddresses.size() > 0 ) {
-                    email.setSubject(subject);
-                    email.setToAddresses( toAddresses);
-                    email.setPlainTextBody(body);
-                    List<Messaging.SendEmailResult> results = Messaging.sendEmail(new Messaging.SingleEmailMessage[] { email } , false);
-                    return results;
-                }
-                else {
+                    return sendEmail(toAddresses, subject, body);
+                 } else {
                     throw new EmailServiceException('No email addresses found under Setup -> Apex Exception Notification');
                 }
                 
@@ -37,20 +32,26 @@ public inherited sharing class EmailService {
             String[] toAddresses = new List<String> { to };
             
             if(toAddresses.size() > 0 ) {
-                email.setSubject(subject);
-                email.setToAddresses( toAddresses);
-                email.setPlainTextBody(body);
-                List<Messaging.SendEmailResult> results = Messaging.sendEmail(new Messaging.SingleEmailMessage[] { email },false);
-                return results;
-            }
-            else {
-                throw new EmailServiceException('To email addresses not specified.');
+               return sendEmail(toAddresses, subject, body);
+            } else {
+            throw new EmailServiceException('To email addresses not specified.');
             }
             
         } catch (Exception ex) {
             throw new EmailServiceException('Encountered error while sending Email. Exception-'+ ex.getMessage());
         }
     }
+
+    private static List<Messaging.SendEmailResult> sendEmail(String[] toAddresses, String subject, String body) {
+
+        Messaging.SingleEmailMessage email = new Messaging.SingleEmailMessage();
+        email.setSubject(subject);
+        email.setToAddresses( toAddresses);
+        email.setPlainTextBody(body);
+        List<Messaging.SendEmailResult> results = Messaging.sendEmail(new Messaging.SingleEmailMessage[] { email },false);
+        return results;
+        
+    }    
     
     /* TODO - Provide implementations of following methods 
     public static List<EmailMessage> getEmailsByIds(Set<Id> emailMessageIds){
