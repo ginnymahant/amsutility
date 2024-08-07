@@ -1,8 +1,6 @@
 @IsTest
 public with sharing class QueueableAMS_ProvideAccessTest {
 
-    private static String uniqueId ;
-
     @TestSetup
     static void makeData() {
 
@@ -25,11 +23,10 @@ public with sharing class QueueableAMS_ProvideAccessTest {
         Profile p = [SELECT Id FROM Profile WHERE Name='Standard User']; 
         Blob b = Crypto.GenerateAESKey(128);
         String h = EncodingUtil.ConvertTohex(b);
-        uniqueId = h.SubString(0,8);
-        User userRec = new User(Alias = uniqueId, Email= uniqueId + '@testdomain.com', isActive = true,
+        User userRec = new User(Alias = h.SubString(0,8) , Email = h.SubString(0,8)  + '@testdomain.com', isActive = true,
                                 EmailEncodingKey='UTF-8', LastName='Testing', LanguageLocaleKey='en_US', 
                                 LocaleSidKey='en_US', ProfileId = p.Id, 
-                                TimeZoneSidKey='America/New_York', UserName= uniqueId + '@testdomain.com');      
+                                TimeZoneSidKey='America/New_York', UserName = h.SubString(0,8) + '@testdomain.com');      
         insert userRec;
     }
 
@@ -99,10 +96,10 @@ public with sharing class QueueableAMS_ProvideAccessTest {
         QueueableAMS_ProvideAccess jobToShareRecords = new QueueableAMS_ProvideAccess( mapOfAllSharingRecordsToInsert );
         jobToShareRecords.nameOfObject = 'Account';
         jobToShareRecords.santizeRecords();
-        Assert.areEqual( false , mapOfAllSharingRecordsToInsert.containsKey('Account'), 'Account entry removed from map as there are no Account records to share.');
+        Assert.areEqual( false , jobToShareRecords.mapOfAllSharingRecordsToInsert.containsKey('Account'), 'Account entry removed from map as there are no Account records to share.');
         jobToShareRecords.nameOfObject = 'XYZRandomObject';
         jobToShareRecords.santizeRecords();
-        Assert.areEqual( false , mapOfAllSharingRecordsToInsert.containsKey('XYZRandomObject'), 'Dirty entry removed from map.');
+        Assert.areEqual( false , jobToShareRecords.mapOfAllSharingRecordsToInsert.containsKey('XYZRandomObject'), 'Dirty entry removed from map.');
     }
         
 }

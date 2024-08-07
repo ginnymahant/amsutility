@@ -7,12 +7,15 @@
  */
  
 public inherited sharing class QueueableAMS_RevokeAccess implements Queueable{
-
+    @TestVisible
     private Map <String , Map <Id, Set<Id>>> mapOfAllUserAccessDetailsPerObject = new Map <String , Map <Id, Set<Id>>> ();
     private String messageInCaseOfFailure = '' ;
+    @TestVisible
     private String nameOfObject = '' ;
     public static final Integer COUNT_OF_RECS_TO_INSERT = 9999;  // THIS VALUE MUST NOT EXCEED 10000 ELSE DML GovernorLimit will be hit and exception thrown, and the whole job will error out 
+    @TestVisible
     private static final Integer MAX_NUMBER_OF_USERS_TO_REVOKE_ACCESS = ApexManagedSharingUtility.MAX_COUNT_OF_USERS_TO_REVOKE_ACCESS ;
+    @TestVisible
     private static final Integer MAX_NUMBER_OF_SHARE_RECORDS_TO_REVOKE_ACCESS = ApexManagedSharingUtility.MAX_COUNT_OF_SHARE_RECORDS_TO_REVOKE_ACCESS ;
 
     public QueueableAMS_RevokeAccess( Map <String , Map <Id, Set<Id>>> mapOfAllUserAccessDetailsForRevoking , String messageOfFailure) {
@@ -49,7 +52,7 @@ public inherited sharing class QueueableAMS_RevokeAccess implements Queueable{
 
             if( mapOfUserIdsAndRecordsForObject != null && mapOfUserIdsAndRecordsForObject.size() > 0 ) {
                 
-                Map <Id, Set<Id>> mapOfUserIdsAndRecordsToRevokeAccess =  getEntriesForRevokingAccessAndTrimMap ( nameOfObject , mapOfUserIdsAndRecordsForObject );
+                Map <Id, Set<Id>> mapOfUserIdsAndRecordsToRevokeAccess =  trimMapAsPerChunkSize ( nameOfObject , mapOfUserIdsAndRecordsForObject );
                 ApexManagedSharingUtility apexSharingUtilityV2 = ApexManagedSharingUtility.getInstance();
                 apexSharingUtilityV2.addToListOfRecordsForRevokingAccess( nameOfObject , mapOfUserIdsAndRecordsToRevokeAccess );
                 apexSharingUtilityV2.revokeAccessForObject( nameOfObject , messageInCaseOfFailure );
@@ -67,6 +70,7 @@ public inherited sharing class QueueableAMS_RevokeAccess implements Queueable{
      * @description This method sanitizes entries in mapOfAllUserAccessDetailsPerObject and removes any null values or data for objects not configured for sharing
      * @param : None
      */
+    @TestVisible
     private void santizeRecords() {
         Set<String> dirtyShare = new Set<String>();
         //Get instance of class which stores all share Object details for those objects that have been configured for Sharing in Custom Metadata
@@ -92,8 +96,8 @@ public inherited sharing class QueueableAMS_RevokeAccess implements Queueable{
      * @param : nameOfObject Name of object
      * @param : mapOfUserIdsAndRecordsForAnObject all entries from mapOfAllUserAccessDetailsPerObject for specified share object - nameOfObject //TODO: This param is redundant and can be gotten rid of
      */
-    
-    private  Map <Id, Set<Id>> getEntriesForRevokingAccessAndTrimMap(String nameOfObject ,  Map <Id, Set<Id>> mapOfUserIdsAndRecordsForAnObject ) {
+    @TestVisible
+    private  Map <Id, Set<Id>> trimMapAsPerChunkSize(String nameOfObject ,  Map <Id, Set<Id>> mapOfUserIdsAndRecordsForAnObject ) {
         
         if( mapOfUserIdsAndRecordsForAnObject == null || mapOfUserIdsAndRecordsForAnObject.size() == 0 ) 
             return null;
