@@ -1,3 +1,7 @@
+/* Description: Test class for ApexManagedSharingUtil
+ * Author: G Mahant (Davanti)
+ * Created Date: 15 Mar 22  
+ */
 @isTest
 public with sharing class ApexManagedSharingUtilTest {
 
@@ -6,7 +10,7 @@ public with sharing class ApexManagedSharingUtilTest {
     @TestSetup
     static void makeData() {
 
-        //Insert data for Apex Managed sharing control custom setting, without this error is thrown if access is shared or revoked using ApexManagedSharingUtilityV2
+        //Insert data for Apex Managed sharing control custom setting, without this error is thrown if access is shared or revoked using ApexManagedSharingUtility
         ApexManagedSharingControlSetting__c sharingControl = new ApexManagedSharingControlSetting__c ( Send_Failure_Emails__c = false , Stop_Queueable_Jobs_For_Record_Sharing__c = false);
         insert sharingControl;
 
@@ -39,7 +43,7 @@ public with sharing class ApexManagedSharingUtilTest {
         Account accRec = [SELECT Id FROM Account LIMIT 1];
         Map<Id, Set<Id>> mapOfUserIdAndRecordIds = new Map<Id, Set<Id>> () ; 
         mapOfUserIdAndRecordIds.put(stdUser.Id , new Set<Id> {accRec.Id} );
-        ApexManagedSharingUtilityV2 amsUtil = ApexManagedSharingUtilityV2.getInstance();
+        ApexManagedSharingUtility amsUtil = ApexManagedSharingUtility.getInstance();
 
         Test.startTest();
             amsUtil.buildAccountShareRecords('Edit', 'Edit', 'Edit', 'Edit',mapOfUserIdAndRecordIds);
@@ -57,7 +61,7 @@ public with sharing class ApexManagedSharingUtilTest {
         Account accRec = [SELECT Id FROM Account LIMIT 1];
         Map<Id, Set<Id>> mapOfUserIdAndRecordIds = new Map<Id, Set<Id>> () ; 
         mapOfUserIdAndRecordIds.put(stdUser.Id , new Set<Id> {accRec.Id} );
-        ApexManagedSharingUtilityV2 amsUtil = ApexManagedSharingUtilityV2.getInstance();
+        ApexManagedSharingUtility amsUtil = ApexManagedSharingUtility.getInstance();
 
         Test.startTest();
             amsUtil.buildAccountShareRecords('Edit', 'Edit', 'Edit', 'Edit', mapOfUserIdAndRecordIds);
@@ -74,7 +78,7 @@ public with sharing class ApexManagedSharingUtilTest {
         Opportunity oppRec = [SELECT Id FROM Opportunity LIMIT 1];
         Map<Id, Set<Id>> mapOfUserIdAndRecordIds = new Map<Id, Set<Id>> () ; 
         mapOfUserIdAndRecordIds.put(stdUser.Id , new Set<Id> { oppRec.Id } );
-        ApexManagedSharingUtilityV2 amsUtil = ApexManagedSharingUtilityV2.getInstance();
+        ApexManagedSharingUtility amsUtil = ApexManagedSharingUtility.getInstance();
 
         Test.startTest();
             amsUtil.buildShareRecords('Opportunity', 'Manual', 'Edit', mapOfUserIdAndRecordIds);
@@ -91,7 +95,7 @@ public with sharing class ApexManagedSharingUtilTest {
         Opportunity oppRec = [SELECT Id FROM Opportunity LIMIT 1];
         Map<Id, Set<Id>> mapOfUserIdAndRecordIds = new Map<Id, Set<Id>> () ; 
         mapOfUserIdAndRecordIds.put(stdUser.Id , new Set<Id> { oppRec.Id } );
-        ApexManagedSharingUtilityV2 amsUtil = ApexManagedSharingUtilityV2.getInstance();
+        ApexManagedSharingUtility amsUtil = ApexManagedSharingUtility.getInstance();
 
         Test.startTest();
             amsUtil.buildShareRecords('Opportunity', 'Manual', 'Edit', mapOfUserIdAndRecordIds);
@@ -113,7 +117,7 @@ public with sharing class ApexManagedSharingUtilTest {
         Map<Id, Set<Id>> mapOfUserIdAndOppRecordIds = new Map<Id, Set<Id>> () ; 
         mapOfUserIdAndOppRecordIds.put(stdUser.Id , new Set<Id> { oppRec.Id } );
 
-        ApexManagedSharingUtilityV2 amsUtil = ApexManagedSharingUtilityV2.getInstance();
+        ApexManagedSharingUtility amsUtil = ApexManagedSharingUtility.getInstance();
         amsUtil.buildAccountShareRecords('Edit', 'Edit', 'Edit', 'Edit', mapOfUserIdAndAccRecordIds);
         amsUtil.buildShareRecords('Opportunity', 'Manual', 'Edit', mapOfUserIdAndOppRecordIds);
         amsUtil.shareRecords( 'Sharing failed during test', false );
@@ -142,7 +146,7 @@ public with sharing class ApexManagedSharingUtilTest {
         Map<Id, Set<Id>> mapOfUserIdAndAccRecordIds = new Map<Id, Set<Id>> () ; 
         mapOfUserIdAndAccRecordIds.put(stdUser.Id , new Set<Id> {accRec.Id} );
 
-        ApexManagedSharingUtilityV2 amsUtil = ApexManagedSharingUtilityV2.getInstance();
+        ApexManagedSharingUtility amsUtil = ApexManagedSharingUtility.getInstance();
         amsUtil.buildAccountShareRecords('Edit', 'Edit', 'Edit', 'Edit', mapOfUserIdAndAccRecordIds);
         amsUtil.shareRecords( 'Sharing failed during test', false );
 
@@ -175,7 +179,7 @@ public with sharing class ApexManagedSharingUtilTest {
         Map<Id, Set<Id>> mapOfUserIdAndRecordIds = new Map<Id, Set<Id>> () ; 
         mapOfUserIdAndRecordIds.put(stdUser.Id , new Set<Id> {accRec1.Id , accRec2.Id} );
 
-        ApexManagedSharingUtilityV2 amsUtil = ApexManagedSharingUtilityV2.getInstance();
+        ApexManagedSharingUtility amsUtil = ApexManagedSharingUtility.getInstance();
         amsUtil.buildAccountShareRecords('Edit', 'Edit', 'Edit', 'Edit', mapOfUserIdAndRecordIds);
         amsUtil.shareRecords( 'Sharing failed during test', false );
 

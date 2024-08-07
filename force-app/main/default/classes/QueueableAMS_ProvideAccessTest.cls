@@ -6,7 +6,7 @@ public with sharing class QueueableAMS_ProvideAccessTest {
     @TestSetup
     static void makeData() {
 
-        //Insert data for Apex Managed sharing control custom setting, without this error is thrown if access is shared or revoked using ApexManagedSharingUtilityV2
+        //Insert data for Apex Managed sharing control custom setting, without this error is thrown if access is shared or revoked using ApexManagedSharingUtility
         ApexManagedSharingControlSetting__c sharingControl = new ApexManagedSharingControlSetting__c ( Send_Failure_Emails__c = false , Stop_Queueable_Jobs_For_Record_Sharing__c = false);
         insert sharingControl;
 

@@ -4,10 +4,10 @@
  * Test : ApexManagedSharingUtilTest
  */
  
-public without sharing class ApexManagedSharingUtilityV2 {
+public without sharing class ApexManagedSharingUtility {
 
     //Declare members
-    private static ApexManagedSharingUtilityV2 instance = null;
+    private static ApexManagedSharingUtility instance = null;
     private Boolean SEND_FAILURE_EMAIL_NOTIFICATION = FALSE ;
     private Map <String , List<SObject>> mapOfAllSharingRecordsToInsert = new Map <String , List<SObject>>();
     private Map <String , Map <Id, Set<Id>>> mapOfAllUserAccessDetailsPerObject = new Map <String , Map <Id, Set<Id>>> ();
@@ -24,7 +24,7 @@ public without sharing class ApexManagedSharingUtilityV2 {
     public static final Integer MAX_COUNT_OF_USERS_TO_REVOKE_ACCESS = 20; //This value must not exceed 20
     public static final Integer MAX_LENGHT_OF_SHAREOBJ_SOQL_FORREVOKING_ACCESS = 100000 ; //This value must not exceed 100000. The Governor imit for length of SOQL statement is 100000
     
-    private ApexManagedSharingUtilityV2() {
+    private ApexManagedSharingUtility() {
 
         //Read Custom Setting for controlling sending of failure email during sharing/revoking of access
         ApexManagedSharingControlSetting__c setting = [ SELECT Send_Failure_Emails__c FROM ApexManagedSharingControlSetting__c LIMIT 1] ;
@@ -42,10 +42,10 @@ public without sharing class ApexManagedSharingUtilityV2 {
      * @description This method generates and returns an instance of this class as per Singleton Pattern
      * @param nameOfObject The name of the object for which records needs to be shared
     */ 
-    public static ApexManagedSharingUtilityV2 getInstance() {
+    public static ApexManagedSharingUtility getInstance() {
 
         if(instance == null){
-            instance = new ApexManagedSharingUtilityV2();
+            instance = new ApexManagedSharingUtility();
         }
         return instance;
     }
@@ -191,10 +191,10 @@ public without sharing class ApexManagedSharingUtilityV2 {
         }
         else {
                 if ( mapOfAllSharingRecordsToInsert.keySet().size() > MAX_COUNT_OF_SHARE_OBJECTS_TO_PROVIDE_ACCESS ) {
-                    throw new ApexManagedSharingUtilityV2Exception('The count of objects of records to share exceeds the permissimible limit of '+MAX_COUNT_OF_SHARE_OBJECTS_TO_PROVIDE_ACCESS+'. Please use the method shareRecordsInBulk instead.');
+                    throw new ApexManagedSharingUtilityException('The count of objects of records to share exceeds the permissimible limit of '+MAX_COUNT_OF_SHARE_OBJECTS_TO_PROVIDE_ACCESS+'. Please use the method shareRecordsInBulk instead.');
                 }
                 if( mapOfAllSharingRecordsToInsert.values().size() > MAX_COUNT_OF_SHARE_RECORDS_TO_CREATE ) {
-                    throw new ApexManagedSharingUtilityV2Exception('The number of records to share exceeds the permissimible limit of 10k (Governor limit of No. of records in DML per transaction). Please use the method shareRecordsInBulk instead.');
+                    throw new ApexManagedSharingUtilityException('The number of records to share exceeds the permissimible limit of 10k (Governor limit of No. of records in DML per transaction). Please use the method shareRecordsInBulk instead.');
                 }   
                 for ( String nameOfObject : mapOfAllSharingRecordsToInsert.keySet() ) {
                     shareRecordsOfObject( nameOfObject , messageInCaseOfFailure );
@@ -216,7 +216,7 @@ public without sharing class ApexManagedSharingUtilityV2 {
         if( shareRecords == null || shareRecords.size() == 0 )
             return;
         if ( shareRecords.size() > MAX_COUNT_OF_SHARE_RECORDS_TO_CREATE ) {
-            throw new ApexManagedSharingUtilityV2Exception('The number of records to share exceeds the permissimible limit of 10k (Governor limit of No. of records in DML per transaction). Please use the method shareRecords with smartShare TRUE instead.');
+            throw new ApexManagedSharingUtilityException('The number of records to share exceeds the permissimible limit of 10k (Governor limit of No. of records in DML per transaction). Please use the method shareRecords with smartShare TRUE instead.');
         }   
         provideAccess (shareRecords , 'Providing user access to records of '+nameOfObject+ '.'+messageInCaseOfFailureToShareRecords) ;   
     }
@@ -315,12 +315,12 @@ public without sharing class ApexManagedSharingUtilityV2 {
         }
         else {
                 if ( mapOfAllUserAccessDetailsPerObject.keySet().size() > MAX_COUNT_OF_SHARE_OBJECTS_TO_REVOKE_ACCESS ) {
-                    throw new ApexManagedSharingUtilityV2Exception('The count of objects for revoking access exceeds the permissimible limit of '+ MAX_COUNT_OF_SHARE_OBJECTS_TO_REVOKE_ACCESS +'. Please use the method revokeAllAccess with smartRevoke TRUE instead.');
+                    throw new ApexManagedSharingUtilityException('The count of objects for revoking access exceeds the permissimible limit of '+ MAX_COUNT_OF_SHARE_OBJECTS_TO_REVOKE_ACCESS +'. Please use the method revokeAllAccess with smartRevoke TRUE instead.');
                 }
                 for ( String nameOfObject : mapOfAllUserAccessDetailsPerObject.keySet() ) {
                     InspectionResult result = inspectRecordsBeforeRevokingAccessAndReturnQuery( nameOfObject ) ;
                     if( result != null && result.inspectionFailed ) {
-                        throw new ApexManagedSharingUtilityV2Exception( result.inspectionFailureMessage );
+                        throw new ApexManagedSharingUtilityException( result.inspectionFailureMessage );
                     }
                 } 
                 for ( String nameOfObject : mapOfAllUserAccessDetailsPerObject.keySet() ) {
@@ -350,7 +350,7 @@ public without sharing class ApexManagedSharingUtilityV2 {
         if ( result == null )
             return ;
         if( result != null && result.inspectionFailed ) {
-            throw new ApexManagedSharingUtilityV2Exception( result.inspectionFailureMessage );
+            throw new ApexManagedSharingUtilityException( result.inspectionFailureMessage );
         }
 
         List<SObject> shareRecs = (List<SObject>) Database.query( result.theShareObjectQuery );
@@ -604,7 +604,7 @@ public without sharing class ApexManagedSharingUtilityV2 {
         public String inspectionFailureMessage = '' ;
     }
 
-    public class ApexManagedSharingUtilityV2Exception extends Exception {
+    public class ApexManagedSharingUtilityException extends Exception {
     }
       
 }

@@ -12,8 +12,8 @@ public inherited sharing class QueueableAMS_RevokeAccess implements Queueable{
     private String messageInCaseOfFailure = '' ;
     private String nameOfObject = '' ;
     public static final Integer COUNT_OF_RECS_TO_INSERT = 9999;  // THIS VALUE MUST NOT EXCEED 10000 ELSE DML GovernorLimit will be hit and exception thrown, and the whole job will error out 
-    private static final Integer MAX_NUMBER_OF_USERS_TO_REVOKE_ACCESS = ApexManagedSharingUtilityV2.MAX_COUNT_OF_USERS_TO_REVOKE_ACCESS ;
-    private static final Integer MAX_NUMBER_OF_SHARE_RECORDS_TO_REVOKE_ACCESS = ApexManagedSharingUtilityV2.MAX_COUNT_OF_SHARE_RECORDS_TO_REVOKE_ACCESS ;
+    private static final Integer MAX_NUMBER_OF_USERS_TO_REVOKE_ACCESS = ApexManagedSharingUtility.MAX_COUNT_OF_USERS_TO_REVOKE_ACCESS ;
+    private static final Integer MAX_NUMBER_OF_SHARE_RECORDS_TO_REVOKE_ACCESS = ApexManagedSharingUtility.MAX_COUNT_OF_SHARE_RECORDS_TO_REVOKE_ACCESS ;
 
     public QueueableAMS_RevokeAccess( Map <String , Map <Id, Set<Id>>> mapOfAllUserAccessDetailsForRevoking , String messageOfFailure) {
         mapOfAllUserAccessDetailsPerObject = mapOfAllUserAccessDetailsForRevoking ;
@@ -50,7 +50,7 @@ public inherited sharing class QueueableAMS_RevokeAccess implements Queueable{
             if( mapOfUserIdsAndRecordsForObject != null && mapOfUserIdsAndRecordsForObject.size() > 0 ) {
                 
                 Map <Id, Set<Id>> mapOfUserIdsAndRecordsToRevokeAccess =  getEntriesForRevokingAccessAndTrimMap ( nameOfObject , mapOfUserIdsAndRecordsForObject );
-                ApexManagedSharingUtilityV2 apexSharingUtilityV2 = ApexManagedSharingUtilityV2.getInstance();
+                ApexManagedSharingUtility apexSharingUtilityV2 = ApexManagedSharingUtility.getInstance();
                 apexSharingUtilityV2.addToListOfRecordsForRevokingAccess( nameOfObject , mapOfUserIdsAndRecordsToRevokeAccess );
                 apexSharingUtilityV2.revokeAccessForObject( nameOfObject , messageInCaseOfFailure );
             }
