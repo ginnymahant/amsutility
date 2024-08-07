@@ -48,8 +48,8 @@ public inherited sharing class QueueableAMS_ProvideAccess implements Queueable{
             if(recordsForSharing != null && recordsForSharing.size() > 0 ) {
                
                 List<SObject> shareRecords =  trimMapAsPerChunkSize ( recordsForSharing);
-                ApexManagedSharingUtility apexSharingUtilityV2 = ApexManagedSharingUtility.getInstance();
-                apexSharingUtilityV2.provideAccess(shareRecords , 'Sharing records of '+nameOfObject.toUpperCase());
+                ApexManagedSharingUtility apexSharingUtility = ApexManagedSharingUtility.getInstance();
+                apexSharingUtility.provideAccess(shareRecords , 'Sharing records of '+nameOfObject.toUpperCase());
             }
         }
         

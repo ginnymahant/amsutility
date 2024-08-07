@@ -1,24 +1,24 @@
 Apex Managed Sharing utility has been developed so it can be used to -
 
-  Provide access to different users to records of multiple object at a time
+  Provide access to different users to records of multiple objecst at a time
 
   Revoke access of different users to records of multiple objects at a time
 
   Share a single record or bulk records (>10K) – the utility figures out on it own if it needs to use async mode for bulk data access
 
-  Specify reason(Rowcause) of choice - Manual or Apex Sharing Reason
+  Specify reason(Rowcause) of choice - Apex Sharing Reason
 
-Following feature of the utility make it easy to use in code -
+Following features of the utility make it easy to use in code -
 
-  Utilize utility from code - Singleton Pattern so can be used across multiple classes without needing to pass references. 1 class – 2 methods for sharing and revoking each
+  Invoke utility from code - Singleton Pattern so can be used across multiple classes without needing to pass references. 1 class – 2 methods for sharing and revoking each
 
-  Utilize utility from flows - Can be invoked as an Apex Action by flows (WIP)
+  Invoke utility from flows - Can be invoked as an Apex Action by flows (WIP)
 
   Configureable Stop switch for bulk mode sharing and revoking of access incase something goes wrong
 
 Source Code - 
 
-  This utility consists of four apex classes, a custom metadata and a custom setting - 
+  This utility consists of five apex classes, a custom metadata and a custom setting - 
 
 Custom Metadata
 
@@ -26,13 +26,13 @@ Custom Metadata
 
 Apex Classes
 
-  ApexManagedShareObjects - This is a singleton pattern based class which contains details of share objects of all objects that have been configured for apex managed sharing.
+  ApexManagedShareObjects - This is a singleton pattern based class which builds details of share objects of those that have been configured in ApexManagedSharingSettings.
 
-  ApexManagedSharingUtilityV2 - This is also a singleton pattern based class which has methods for sharing access and revoking access of users to records of objects that have been configured in custom metadata. This class maintains a map mapOfAllSharingRecordsToInsert which contains a list of share object records to be created per object. The class also maintains a map mapOfAllUserAccessDetailsPerObject which contains  list of all users and records that they must get access to per object. ApexManagedSharingUtilityV2 detects if it needs to create share records and delete share records in asynchronous mode. To do so it uses QueueableAMS_ProvideAccess or QueueableAMS_RevokeAccess .  If the amount of share records to be created or queried is higher than per transaction limit then ApexManagedSharingUtilityV2  utility switches to asynchronous mode otherwise it runs synchronously.
+  ApexManagedSharingUtility - This is also a singleton pattern based class which has methods for sharing access and revoking access of users to records of objects that have been configured in custom metadata. This class maintains a map mapOfAllSharingRecordsToInsert which contains a list of share object records to be created per object. The class also maintains a map mapOfAllUserAccessDetailsPerObject which contains list of all users and records that they must get access to per object. ApexManagedSharingUtility detects if it needs to create share records and delete share records in asynchronous mode. To do so it uses QueueableAMS_ProvideAccess or QueueableAMS_RevokeAccess .  If the amount of share records to be created or queried is higher than per transaction limit then ApexManagedSharingUtilityV2  utility switches to asynchronous mode otherwise it runs synchronously.
 
-  QueueableAMS_ProvideAccess - This queueable apex class is invoked  by shareRecords method of ApexManagedSharingUtilityV2. 
+  QueueableAMS_ProvideAccess - This queueable apex class is invoked by shareRecords method of ApexManagedSharingUtility. 
 
-  QueueableAMS_RevokeAccess - This queueable apex class is invoked  by revokeAllAccess method of ApexManagedSharingUtilityV2. It queries the necessary share object records and deletes them.
+  QueueableAMS_RevokeAccess - This queueable apex class is invoked by revokeAllAccess method of ApexManagedSharingUtility. It queries the necessary share object records and deletes them.
 
 
 Custom Setting
@@ -50,7 +50,10 @@ Using the Utility
 
 4.Invoke utility in Code
 
-Example for providing access to users -
+
+CODE SAMPLES INVOKING UTILITY
+
+1. Example for providing access to users -
 
 /*-----------------------------------------------------------------------CODE--------------------------------------------------------------------------------*/
 //Define a map Key: user Id, Value : Set of Ids of records that the user needs access to
@@ -72,7 +75,7 @@ apexSharingUtility.shareRecords('Failure Message',TRUE);
 
 NOTE:  buildAccountShareRecords method of ApexManagedSharingUtilityV2 must be used incase users must be provided access to records of Account object only.
 
-Example for revoking access of users
+2. Example for revoking access of users
 
 /*-----------------------------------------------------------------------CODE--------------------------------------------------------------------------------*/
 //Define a map Key: user Id, Value : Set of Ids of records to which users must no longer have access
@@ -97,6 +100,6 @@ TO DO - Features and Enhancements
 2. Create method to downgrade access of users to certain records from Edit To Read.This will be similar to revokeAllAccess method, instead of deleting this method will update share records.
 3. Clear the map at the end in shareRecord.
 4. Clear the map at the end in revokeAllAccess.
-5. There should be a method to support bulk revoking of access followed by providing access in bulk. The method can invoke a new Queueable which will be auto-chained and its execute method will include logic inside execute methods of QueueableAMS_RevokeAccess and QueueableAMS_RevokeAccess.
+5. Build a method to support bulk revoking of access followed by providing access in bulk. The method can invoke a new Queueable which will be auto-chained and its execute method will include logic inside execute methods of QueueableAMS_RevokeAccess and QueueableAMS_RevokeAccess.
 6. An email notification to be sent at the end of Queueable jobs that provide access and revoke access.The email notification is configurable and can be sent to a list of users configured in a custom setting, this email notification can be switched off and on as well.
-7. Enhance utility to manage (provide and revoke) access to records for Queues and Public Groups
+7. Enhance utility to manage (provide and revoke) access to records for Queues and Public Groups.
