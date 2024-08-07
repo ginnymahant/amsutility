@@ -59,18 +59,18 @@ public without sharing class ApexManagedSharingUtility {
      * NOTE: 
      */
 
-    public void buildShareRecords( String apiNameOfObject , String rowCause , String accessLevel , Map<Id, Set<Id>> mapOfUserIdAndRecordIds) {
+    public boolean buildShareRecords( String apiNameOfObject , String rowCause , String accessLevel , Map<Id, Set<Id>> mapOfUserIdAndRecordIds) {
 
         //Perform Null checks
         if(String.isBlank(apiNameOfObject) || String.isBlank(rowCause) || String.isBlank(accessLevel) || mapOfUserIdAndRecordIds == null || mapOfUserIdAndRecordIds.size() == 0  || apiNameOfObject.tolowerCase() == 'account')
-            return ;
+            return false;
 
             apiNameOfObject = apiNameOfObject.tolowerCase();
         //Ensure that the object in apiNameOfObject is valid  i.e. it has been configured for sharing  
         ApexManagedShareObjects apexShareObjects = ApexManagedShareObjects.getInstance();
         ApexManagedShareObjects.GenericShareObject shareObjectDetail = apexShareObjects.getTheShareObjectDetailsForObjectName(apiNameOfObject);
         if ( shareObjectDetail == null)
-            return ;
+            return false;
 
         //Build share records
         List<SObject> sharingRecords = new List<SObject>();
@@ -86,7 +86,7 @@ public without sharing class ApexManagedSharingUtility {
             }     
         }
         if( sharingRecords.size() == 0 )
-            return ;
+            return false;
 
         List<SObject> shareRecs = new List<SObject>();
         if ( mapOfAllSharingRecordsToInsert.get(apiNameOfObject) == null )
@@ -98,6 +98,7 @@ public without sharing class ApexManagedSharingUtility {
         } 
          
         mapOfAllSharingRecordsToInsert.put( apiNameOfObject , shareRecs);
+        return true;
     }  
     
     /**
@@ -109,20 +110,20 @@ public without sharing class ApexManagedSharingUtility {
      * NOTE: 
      */
 
-    public void buildAccountShareRecords( String accountAccessLevel , String caseAccessLevel , String  opportunityAccessLevel , String  contactAccessLevel , Map<Id, Set<Id>> mapOfUserIdAndRecordIds) {
+    public boolean buildAccountShareRecords( String accountAccessLevel , String caseAccessLevel , String  opportunityAccessLevel , String  contactAccessLevel , Map<Id, Set<Id>> mapOfUserIdAndRecordIds) {
 
         if( String.isBlank(accountAccessLevel) || mapOfUserIdAndRecordIds == null || mapOfUserIdAndRecordIds.size() == 0 )
-            return ;
+            return false;
         if ( !accountAccessLevel.equalsIgnoreCase('ALL') && String.isBlank(caseAccessLevel) && String.isBlank(opportunityAccessLevel) )  
-            return;  
+            return false;  
         if ( !OWD_CONTACT.equalsIgnoreCase('ControlledByParent') && String.isBlank(contactAccessLevel) )  
-            return;     
+            return false;     
         
         //Ensure that the object in nameOfObject is valid before creating shares 
         ApexManagedShareObjects apexShareObjects = ApexManagedShareObjects.getInstance();
         ApexManagedShareObjects.GenericShareObject shareObjectDetail = apexShareObjects.getTheShareObjectDetailsForObjectName('account');
         if ( shareObjectDetail == null)
-            return ;
+            return false;
 
         List<SObject> sharingRecords = new List<SObject>();
         for (Id userId : mapOfUserIdAndRecordIds.keySet()) {
@@ -144,7 +145,7 @@ public without sharing class ApexManagedSharingUtility {
             }          
         }
         if( sharingRecords.size() == 0 )
-            return ;
+            return false;
 
         List<SObject> shareRecs ;
         if ( mapOfAllSharingRecordsToInsert.get('account') == null )
@@ -157,6 +158,7 @@ public without sharing class ApexManagedSharingUtility {
             
         mapOfAllSharingRecordsToInsert.put( 'account' , shareRecs);   
         System.debug('The map of all account sharing records is - '+ mapOfAllSharingRecordsToInsert); 
+        return true;
     }  
 
     /**
