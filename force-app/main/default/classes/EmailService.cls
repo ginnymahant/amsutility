@@ -32,12 +32,11 @@ public inherited sharing class EmailService {
 
             String[] toAddresses = to.split(',');
             
-            if(toAddresses.size() > 0) {
+            if(toAddresses.size() > 0 && String.isNotBlank(toAddresses[0])) {
                return sendEmail(toAddresses, subject, body);
             } else {
                 throw new EmailServiceException('To email addresses not specified.');
             }
-            
         } catch (Exception ex) {
             throw new EmailServiceException('Encountered error while sending Email. Exception-'+ ex.getMessage());
         }

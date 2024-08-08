@@ -36,7 +36,7 @@ public with sharing class InvocableProvideAccessTest {
 		request.nameOfObject = 'Opportunity';
 		request.rowCause = 'Manual';
         request.accessLevel = 'Edit';
-		List<InvocableProvideAccess.UserAndRecordIds> userAndRecordIdsList = new List<InvocableProvideAccess.UserAndRecordIds>();
+		List<UserAndRecordIds> userAndRecordIdsList = new List<UserAndRecordIds>();
 
 		List<Opportunity> opportunities = [
 			SELECT Id
@@ -44,7 +44,7 @@ public with sharing class InvocableProvideAccessTest {
 			LIMIT 1
 		];
 		Id opportunityId = opportunities[0].Id;
-        InvocableProvideAccess.UserAndRecordIds userAndRecordIds = new InvocableProvideAccess.UserAndRecordIds();
+        UserAndRecordIds userAndRecordIds = new UserAndRecordIds();
         userAndRecordIds.userId = stdUser.Id;
         userAndRecordIds.recordIds = new Set<Id>{ opportunityId };
         userAndRecordIdsList.add(userAndRecordIds);
@@ -54,9 +54,9 @@ public with sharing class InvocableProvideAccessTest {
          request = new InvocableProvideAccess.AMC_ProvideAccessRequest();
 		request.nameOfObject = 'Account';
         request.accessLevel = 'Edit';
-		userAndRecordIdsList = new List<InvocableProvideAccess.UserAndRecordIds>();
+		userAndRecordIdsList = new List<UserAndRecordIds>();
 
-        userAndRecordIds = new InvocableProvideAccess.UserAndRecordIds();
+        userAndRecordIds = new UserAndRecordIds();
         userAndRecordIds.userId = stdUser.Id;
         userAndRecordIds.recordIds = new Set<Id>{ };
         userAndRecordIdsList.add(userAndRecordIds);
@@ -76,8 +76,8 @@ public with sharing class InvocableProvideAccessTest {
 		request.nameOfObject = 'Account';
 		request.rowCause = 'Manual';
         request.accessLevel = 'Edit';
-		List<InvocableProvideAccess.UserAndRecordIds> userAndRecordIdsList = new List<InvocableProvideAccess.UserAndRecordIds>();
-        InvocableProvideAccess.UserAndRecordIds userAndRecordIds = new InvocableProvideAccess.UserAndRecordIds();
+		List<UserAndRecordIds> userAndRecordIdsList = new List<UserAndRecordIds>();
+        UserAndRecordIds userAndRecordIds = new UserAndRecordIds();
         userAndRecordIds.userId = stdUser.Id;
         userAndRecordIds.recordIds = new Set<Id>{ };
         userAndRecordIdsList.add(userAndRecordIds);
