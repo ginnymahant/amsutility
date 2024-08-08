@@ -232,17 +232,17 @@ public without sharing class ApexManagedSharingUtility {
      * NOTE: 
      */
 
-    public void addToListOfRecordsForRevokingAccess( String nameOfObject ,  Map<Id, Set<Id>> mapOfUserIdAndRecordIds ) {
+    public Boolean addToListOfRecordsForRevokingAccess( String nameOfObject ,  Map<Id, Set<Id>> mapOfUserIdAndRecordIds ) {
 
         if(String.isBlank(nameOfObject) || mapOfUserIdAndRecordIds == null || mapOfUserIdAndRecordIds.size() == 0 )
-            return ;
+            return false;
 
         nameOfObject = nameOfObject.tolowerCase();
         //Ensure that the object in nameOfObject has been configured for Aex Managed sharing and revoking, if not then return 
         ApexManagedShareObjects apexShareObjects = ApexManagedShareObjects.getInstance();
         ApexManagedShareObjects.GenericShareObject shareObjectDetail = apexShareObjects.getTheShareObjectDetailsForObjectName(nameOfObject);
         if ( shareObjectDetail == null)
-            return ;
+            return false;
 
         //Filter out entries in mapOfUserIdAndRecordIds wherein a key is NULL or its Set of values is NULL or the Set contains nothing
         Map<Id, Set<Id>> mapOfUserIdAndRecordIds_Filtered = new  Map<Id, Set<Id>>();
@@ -272,8 +272,10 @@ public without sharing class ApexManagedSharingUtility {
                 }
             }
             mapOfAllUserAccessDetailsPerObject.put(nameOfObject , existingMapOfAllUserAccessDetailsPerObject) ;
-        } 
+        }
+        
         System.debug ('The mapOfAllUserAccessDetailsPerObject is - ' + mapOfAllUserAccessDetailsPerObject ) ; 
+        return true; 
     }
 
     /**

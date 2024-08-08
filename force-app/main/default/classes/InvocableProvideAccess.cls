@@ -3,19 +3,18 @@ public with sharing class InvocableProvideAccess {
     @InvocableMethod(label='Provide Access' description='Provides access to records to the specified users.' category='Programatic Record Access Management')
     public static List<String> provideAccess(List<AMC_ProvideAccessRequest> inputList) {
 
-        Map<Id, Set<Id>> mapUserIdListRequestId = new Map<Id, Set<Id>>();
         List<String> errors = new List<String>(); 
         ApexManagedSharingUtility apexSharingUtility = ApexManagedSharingUtility.getInstance() ;
 
         for (AMC_ProvideAccessRequest req : inputList) {
             Boolean success ;
             if( req.nameOfObject.equalsIgnoreCase('Account') ) {
-                success = apexSharingUtility.buildAccountShareRecords(req.accessLevel,req.caseAccessLevel, req.opportunityAccessLevel , req.contactAccessLevel , convertToMap(req.userAndRecordIdsList));
+                success = apexSharingUtility.buildAccountShareRecords(req.accessLevel,req.caseAccessLevel, req.opportunityAccessLevel , req.contactAccessLevel , UserAndRecordIds.convertToMap(req.userAndRecordIdsList));
                 if ( !success) {
                     errors.add('To provide account record access to users, parameters provided was invalid. Provide correct access levels that apply for case, contact etc and try again.');
                 }
             } else {
-                success = apexSharingUtility.buildShareRecords(req.nameOfObject , req.rowCause, req.accessLevel , convertToMap(req.userAndRecordIdsList));
+                success = apexSharingUtility.buildShareRecords(req.nameOfObject , req.rowCause, req.accessLevel , UserAndRecordIds.convertToMap(req.userAndRecordIdsList));
                 if ( !success) {
                     errors.add('To provide ' + req.nameOfObject + ' record access to users, parameters provided was invalid.Ensure parametrer are not blank and object is configured in ApexManagedSharingSetting custom metadata.');
                 } 
@@ -24,23 +23,9 @@ public with sharing class InvocableProvideAccess {
         if(errors.size() > 0 ) {
             return errors;
         }
-        apexSharingUtility.shareRecords('Providing access to records for users via Provide Access-Apex Managed Sharing utility failed.',FALSE);
+        apexSharingUtility.shareRecords('Providing access to records for users via Provide Access-Apex Managed Sharing utility failed.',TRUE);
         return null;
 
-    }
-
-    public static Map<Id, Set<Id>> convertToMap(List<UserAndRecordIds> userRecordList) {
-
-        Map<Id, Set<Id>> userRecordMap = new Map<Id, Set<Id>>();
-        for (UserAndRecordIds userRecord : userRecordList) {
-            if (userRecord.userId != null) {
-                userRecordMap.put(userRecord.userId, new Set<Id>());
-            }
-            if (userRecord.recordIds != null) {
-                userRecordMap.get(userRecord.userId).addAll(userRecord.recordIds);
-            }
-        }
-        return userRecordMap;
     }
 
     public class AMC_ProvideAccessRequest{
@@ -61,8 +46,5 @@ public with sharing class InvocableProvideAccess {
         public String contactAccessLevel;
     }
 
-    public class UserAndRecordIds{
-        public Id userId;
-        public Set<Id> recordIds;
-    }
+
 }
