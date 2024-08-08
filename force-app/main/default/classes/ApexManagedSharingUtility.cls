@@ -200,8 +200,9 @@ public without sharing class ApexManagedSharingUtility {
                 }   
                 for ( String nameOfObject : mapOfAllSharingRecordsToInsert.keySet() ) {
                     shareRecordsOfObject( nameOfObject , messageInCaseOfFailure );
-                }
-        } 
+                }  
+        }
+        mapOfAllSharingRecordsToInsert.clear(); 
     }
 
     /**
@@ -328,7 +329,8 @@ public without sharing class ApexManagedSharingUtility {
                 for ( String nameOfObject : mapOfAllUserAccessDetailsPerObject.keySet() ) {
                     revokeAccessForObject( nameOfObject , messageInCaseOfFailure );
                 }
-        }     
+        }
+        mapOfAllUserAccessDetailsPerObject.clear();     
 
     }
 
