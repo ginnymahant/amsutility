@@ -8,7 +8,7 @@ public without sharing class ApexManagedSharingUtility {
 
     //Declare members
     private static ApexManagedSharingUtility instance = null;
-    private Boolean SEND_FAILURE_EMAIL_NOTIFICATION = FALSE ;
+    private ApexManagedSharingControlSetting__c APEX_MANAGED_SHARING_CONTROL_SETTING ;
     private Map <String , List<SObject>> mapOfAllSharingRecordsToInsert = new Map <String , List<SObject>>();
     private Map <String , Map <Id, Set<Id>>> mapOfAllUserAccessDetailsPerObject = new Map <String , Map <Id, Set<Id>>> ();
     private String OWD_ACCOUNT;
@@ -27,8 +27,7 @@ public without sharing class ApexManagedSharingUtility {
     private ApexManagedSharingUtility() {
 
         //Read Custom Setting for controlling sending of failure email during sharing/revoking of access
-        ApexManagedSharingControlSetting__c setting = [ SELECT Send_Failure_Emails__c FROM ApexManagedSharingControlSetting__c LIMIT 1] ;
-        SEND_FAILURE_EMAIL_NOTIFICATION = setting.Send_Failure_Emails__c ;
+        APEX_MANAGED_SHARING_CONTROL_SETTING  = [ SELECT Send_Failure_Emails__c , Email_Ids__c FROM ApexManagedSharingControlSetting__c LIMIT 1] ;
 
         Organization org = [ SELECT Id, DefaultAccountAccess, DefaultContactAccess, DefaultCaseAccess, DefaultOpportunityAccess FROM Organization ];
         OWD_ACCOUNT = org.DefaultAccountAccess;
@@ -202,6 +201,7 @@ public without sharing class ApexManagedSharingUtility {
                     shareRecordsOfObject( nameOfObject , messageInCaseOfFailure );
                 }  
         }
+        mapOfAllSharingRecordsToInsert.clear();
         
     }
 
@@ -333,7 +333,8 @@ public without sharing class ApexManagedSharingUtility {
                     revokeAccessForObject( nameOfObject , messageInCaseOfFailure );
                 }
                 
-        }     
+        }
+        mapOfAllUserAccessDetailsPerObject.clear();     
 
     }
 
@@ -501,9 +502,9 @@ public without sharing class ApexManagedSharingUtility {
                 }
             }
             try {
-                if(sendErrorEmail && SEND_FAILURE_EMAIL_NOTIFICATION )
-                    EmailService.sendEmailToApexEmailNotificationAddress(subject,body);
-
+                if(sendErrorEmail && APEX_MANAGED_SHARING_CONTROL_SETTING.Send_Failure_Emails__c ) {
+                    EmailService.sendPlainTextEmail(APEX_MANAGED_SHARING_CONTROL_SETTING.Email_Ids__c, subject, body);
+                }
             } catch(Exception ex) {
                 System.debug('Unexpected failure occurred while sending email: '+ ex.getMessage());
             }                    
@@ -545,9 +546,9 @@ public without sharing class ApexManagedSharingUtility {
                 }
             }
             try {
-                    if(sendErrorEmail  && SEND_FAILURE_EMAIL_NOTIFICATION )
-                        EmailService.sendEmailToApexEmailNotificationAddress(subject,body);
-
+                    if(sendErrorEmail  && APEX_MANAGED_SHARING_CONTROL_SETTING.Send_Failure_Emails__c ) {
+                        EmailService.sendPlainTextEmail(APEX_MANAGED_SHARING_CONTROL_SETTING.Email_Ids__c, subject, body);
+                    }
             } catch(Exception ex) {
                 System.debug('Unexpected failure occurred while sending email: '+ ex.getMessage());
             } 

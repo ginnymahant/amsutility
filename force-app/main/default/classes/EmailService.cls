@@ -29,12 +29,13 @@ public inherited sharing class EmailService {
     public static List<Messaging.SendEmailResult> sendPlainTextEmail(String to, String subject, String body) {
         try {
             Messaging.SingleEmailMessage email = new Messaging.SingleEmailMessage();
-            String[] toAddresses = new List<String> { to };
+
+            String[] toAddresses = to.split(',');
             
-            if(toAddresses.size() > 0 && String.isNotBlank(toAddresses[0])) {
+            if(toAddresses.size() > 0) {
                return sendEmail(toAddresses, subject, body);
             } else {
-            throw new EmailServiceException('To email addresses not specified.');
+                throw new EmailServiceException('To email addresses not specified.');
             }
             
         } catch (Exception ex) {
