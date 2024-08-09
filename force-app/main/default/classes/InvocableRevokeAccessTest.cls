@@ -55,18 +55,18 @@ public with sharing class InvocableRevokeAccessTest {
 		requestList.add(request);
 
         List<InvocableProvideAccess.AMC_ProvideAccessResult> errors = InvocableProvideAccess.provideAccess(requestList);
-        Assert.areEqual( true, errors == null, 'Providing access to Opportunity was successful');
+        Assert.areEqual( true, errors == null || errors.size() == 0 , 'Providing access to Opportunity was successful');
         
         revokeReq.nameOfObject = 'Opportunity';
         revokeReq.userAndRecordIdsList = userAndRecordIdsList;
         revokeRequestList.add(revokeReq);
-        List<String> revErrors = new List<String>();
+        List<InvocableRevokeAccess.AMC_RevokeAccessResult> revErrors = new List<InvocableRevokeAccess.AMC_RevokeAccessResult>();
 
         Test.startTest();
             revErrors = InvocableRevokeAccess.revokeAccess(revokeRequestList);
         Test.stopTest();
 
-        Assert.areEqual( true, errors == null , 'Revoking access to Opportunity was successfull');
+        Assert.areEqual( true, errors == null || errors.size() == 0 , 'Revoking access to Opportunity was successful');
 	}
 
     @isTest
@@ -81,11 +81,11 @@ public with sharing class InvocableRevokeAccessTest {
         revokeReq.nameOfObject = 'Opportunity';
         revokeReq.userAndRecordIdsList = null;
         revokeRequestList.add(revokeReq);
-        List<String> errors = null;
+        List<InvocableRevokeAccess.AMC_RevokeAccessResult> errors = null;
         Test.startTest();
             errors = InvocableRevokeAccess.revokeAccess(revokeRequestList);
         Test.stopTest();
 
-        Assert.areEqual( true, errors != null , 'Revoking access to Opportunity was successfull');
+        Assert.areEqual( true, errors != null , 'Revoking access to Opportunity was successful');
 	}
 }

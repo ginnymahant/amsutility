@@ -113,8 +113,6 @@ public without sharing class ApexManagedSharingUtility {
 
         if( String.isBlank(accountAccessLevel) || mapOfUserIdAndRecordIds == null || mapOfUserIdAndRecordIds.size() == 0 )
             return false;
-        if ( !accountAccessLevel.equalsIgnoreCase('ALL') && String.isBlank(caseAccessLevel) && String.isBlank(opportunityAccessLevel) )  
-            return false;  
         if ( !OWD_CONTACT.equalsIgnoreCase('ControlledByParent') && String.isBlank(contactAccessLevel) )  
             return false;     
         
@@ -296,11 +294,11 @@ public without sharing class ApexManagedSharingUtility {
      * 
      */
 
-    public void revokeAllAccess( String messageInCaseOfFailure , Boolean smartRevoke) {
+    public List<String> revokeAllAccess( String messageInCaseOfFailure , Boolean smartRevoke) {
 
         if( mapOfAllUserAccessDetailsPerObject == null || mapOfAllUserAccessDetailsPerObject.size() == 0 )
-            return;
-
+            return null;
+        List<String> errors = new List<String>();
         if ( smartRevoke ) {
             if ( mapOfAllUserAccessDetailsPerObject.keySet().size() > MAX_COUNT_OF_SHARE_OBJECTS_TO_REVOKE_ACCESS ) {
                 QueueableAMS_RevokeAccess jobToRevokeAccess = new QueueableAMS_RevokeAccess( mapOfAllUserAccessDetailsPerObject , messageInCaseOfFailure );
@@ -322,10 +320,12 @@ public without sharing class ApexManagedSharingUtility {
                     } 
                     else {
                         for ( String nameOfObject : mapOfAllUserAccessDetailsPerObject.keySet() ) {
-                            revokeAccessForObject( nameOfObject , messageInCaseOfFailure );
+                            String error = revokeAccessForObject( nameOfObject , messageInCaseOfFailure );
+                            if(String.isNotBlank(error)) {
+                                errors.add(error);
+                            }
                         }
-                    }
-                    
+                    }  
             }          
         }
         else {
@@ -339,12 +339,14 @@ public without sharing class ApexManagedSharingUtility {
                     }
                 } 
                 for ( String nameOfObject : mapOfAllUserAccessDetailsPerObject.keySet() ) {
-                    revokeAccessForObject( nameOfObject , messageInCaseOfFailure );
+                    String error = revokeAccessForObject( nameOfObject , messageInCaseOfFailure );
+                    if(String.isNotBlank(error)) {
+                        errors.add(error);
+                    }
                 }
-                
         }
         mapOfAllUserAccessDetailsPerObject.clear();     
-
+        return errors;
     }
 
     /**
@@ -355,17 +357,17 @@ public without sharing class ApexManagedSharingUtility {
      *  
      */
     
-    public void revokeAccessForObject( String nameOfObject , String messageInCaseOfFailureToRevokeAccess ) {
+    public String revokeAccessForObject( String nameOfObject , String messageInCaseOfFailureToRevokeAccess ) {
         nameOfObject = nameOfObject.toLowerCase();
 
         //Retrieve the map that holds user access details for the given object
         Map< Id, Set<Id> > mapOfAllUserAccessDetailsForObject = mapOfAllUserAccessDetailsPerObject.get(nameOfObject) ;
         if( mapOfAllUserAccessDetailsForObject == null || mapOfAllUserAccessDetailsForObject.size() == 0 )
-            return ;
+            return null;
 
         InspectionResult result = inspectRecordsBeforeRevokingAccessAndReturnQuery( nameOfObject );
         if ( result == null )
-            return ;
+            return null;
         if( result != null && result.inspectionFailed ) {
             throw new ApexManagedSharingUtilityException( result.inspectionFailureMessage );
         }
@@ -385,7 +387,7 @@ public without sharing class ApexManagedSharingUtility {
             }       
         } 
         System.debug('AMS UTILITY REVOKING ACCESS FOR - '+revokeSharing);   
-        revokeAccess ( revokeSharing ,  'Revoking access of users to '+ nameOfObject + '.'+ messageInCaseOfFailureToRevokeAccess) ;   
+        return revokeAccess ( revokeSharing ,  'Revoking access of users to '+ nameOfObject + '.'+ messageInCaseOfFailureToRevokeAccess) ;   
     }
 
     /**
@@ -527,14 +529,14 @@ public without sharing class ApexManagedSharingUtility {
      *  @param messageInCaseOfFailure  Message to be printed in failure emails
      */
 
-    public void revokeAccess( List<SObject> accessRecords , String messageIncaseOfFailure ) {   
+    public String revokeAccess( List<SObject> accessRecords , String messageIncaseOfFailure ) {   
 
         String subject = 'Record Access Management Utility-Error Notification '+ System.today().format();
         String body = 'Hi,\n\n';
-        Boolean sendErrorEmail = FALSE;
+        Boolean errorFound = FALSE;
 
         if ( accessRecords == null ||  accessRecords.size() > 10000 ) // Max no. of DML records in a transaction is 10000
-            return ;
+            return null;
 
         if(accessRecords != null && accessRecords.size() > 0 )  {  
             body +=       '    This email is to notify you of the errors encountered while revoking access to records for some users. '+ messageIncaseOfFailure +' \n\n';
@@ -546,8 +548,8 @@ public without sharing class ApexManagedSharingUtility {
                     System.debug('Successfully deleted record with ID: ' + res.getId());
                 }
                 else { 
-                        if(!sendErrorEmail)
-                            sendErrorEmail = TRUE;  
+                        if(!errorFound)
+                            errorFound = TRUE;  
                     // Operation failed, so get all errors                
                         for(Database.Error err : res.getErrors()) {
                             body += 'ID : '+ res.getId()+ ' Error - '+ err.getStatusCode() + ': ' + err.getMessage() + ' \n';           
@@ -556,13 +558,14 @@ public without sharing class ApexManagedSharingUtility {
                 }
             }
             try {
-                    if(sendErrorEmail  && APEX_MANAGED_SHARING_CONTROL_SETTING.Send_Failure_Emails__c ) {
+                    if( errorFound  && APEX_MANAGED_SHARING_CONTROL_SETTING.Send_Failure_Emails__c ) {
                         EmailService.sendPlainTextEmail(APEX_MANAGED_SHARING_CONTROL_SETTING.Email_Ids__c, subject, body);
                     }
             } catch(Exception ex) {
                 System.debug('Unexpected failure occurred while sending email: '+ ex.getMessage());
             } 
         }
+        return errorFound ? body : null;
     }
 
     /**

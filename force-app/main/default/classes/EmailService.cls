@@ -3,9 +3,6 @@ public inherited sharing class EmailService {
 
     public static List<Messaging.SendEmailResult> sendEmailToApexEmailNotificationAddress( String subject, String body) {
         try {
-                
-                Messaging.SingleEmailMessage email = new Messaging.SingleEmailMessage();
-                
                 List<String> toAddresses = new List<String>();
                 for ( ApexEmailNotification emailAddress : [SELECT Id , Email, User.Email FROM ApexEmailNotification] )  {
 
@@ -28,12 +25,11 @@ public inherited sharing class EmailService {
 
     public static List<Messaging.SendEmailResult> sendPlainTextEmail(String to, String subject, String body) {
         try {
-            Messaging.SingleEmailMessage email = new Messaging.SingleEmailMessage();
-
             String[] toAddresses = to.split(',');
-            
+    
             if(toAddresses.size() > 0 && String.isNotBlank(toAddresses[0])) {
-               return sendEmail(toAddresses, subject, body);
+                List<Messaging.SendEmailResult> result = sendEmail(toAddresses, subject, body);
+                return result;
             } else {
                 throw new EmailServiceException('To email addresses not specified.');
             }
