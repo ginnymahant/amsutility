@@ -46,7 +46,7 @@ public with sharing class InvocableProvideAccessTest {
 		Id opportunityId = opportunities[0].Id;
         UserAndRecordIds userAndRecordIds = new UserAndRecordIds();
         userAndRecordIds.userId = stdUser.Id;
-        userAndRecordIds.recordIds = new Set<Id>{ opportunityId };
+        userAndRecordIds.recordIds = new List<Id>{ opportunityId };
         userAndRecordIdsList.add(userAndRecordIds);
 		request.userAndRecordIdsList = userAndRecordIdsList;
 		requestList.add(request);
@@ -58,12 +58,12 @@ public with sharing class InvocableProvideAccessTest {
 
         userAndRecordIds = new UserAndRecordIds();
         userAndRecordIds.userId = stdUser.Id;
-        userAndRecordIds.recordIds = new Set<Id>{ };
+        userAndRecordIds.recordIds = new List<Id>{ };
         userAndRecordIdsList.add(userAndRecordIds);
 		request.userAndRecordIdsList = userAndRecordIdsList;
 
         Test.startTest();
-            List<String> errors = InvocableProvideAccess.provideAccess(requestList);
+            List<InvocableProvideAccess.AMC_ProvideAccessResult> errors = InvocableProvideAccess.provideAccess(requestList);
         Test.stopTest();
         Assert.areEqual( true, errors == null, 'Providing access to Opportunity was successful');
 
@@ -79,13 +79,13 @@ public with sharing class InvocableProvideAccessTest {
 		List<UserAndRecordIds> userAndRecordIdsList = new List<UserAndRecordIds>();
         UserAndRecordIds userAndRecordIds = new UserAndRecordIds();
         userAndRecordIds.userId = stdUser.Id;
-        userAndRecordIds.recordIds = new Set<Id>{ };
+        userAndRecordIds.recordIds = new List<Id>{ };
         userAndRecordIdsList.add(userAndRecordIds);
 		request.userAndRecordIdsList = userAndRecordIdsList;
         requestList.add(request);
 
         Test.startTest();
-            List<String> errors = InvocableProvideAccess.provideAccess(requestList);
+            List<InvocableProvideAccess.AMC_ProvideAccessResult> errors = InvocableProvideAccess.provideAccess(requestList);
         Test.stopTest();
         Assert.areNotEqual( null, errors , 'Providing access to Account with invalid request reported errors');
 

@@ -49,20 +49,21 @@ public with sharing class InvocableRevokeAccessTest {
 
         UserAndRecordIds userAndRecordIds = new UserAndRecordIds();
         userAndRecordIds.userId = stdUser.Id;
-        userAndRecordIds.recordIds = new Set<Id>{ opportunities[0].Id };
+        userAndRecordIds.recordIds = new List<Id>{ opportunities[0].Id };
         userAndRecordIdsList.add(userAndRecordIds);
 		request.userAndRecordIdsList = userAndRecordIdsList;
 		requestList.add(request);
 
-        List<String> errors = InvocableProvideAccess.provideAccess(requestList);
+        List<InvocableProvideAccess.AMC_ProvideAccessResult> errors = InvocableProvideAccess.provideAccess(requestList);
         Assert.areEqual( true, errors == null, 'Providing access to Opportunity was successful');
         
         revokeReq.nameOfObject = 'Opportunity';
         revokeReq.userAndRecordIdsList = userAndRecordIdsList;
         revokeRequestList.add(revokeReq);
+        List<String> revErrors = new List<String>();
 
         Test.startTest();
-            errors = InvocableRevokeAccess.revokeAccess(revokeRequestList);
+            revErrors = InvocableRevokeAccess.revokeAccess(revokeRequestList);
         Test.stopTest();
 
         Assert.areEqual( true, errors == null , 'Revoking access to Opportunity was successfull');

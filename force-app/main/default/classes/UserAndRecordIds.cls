@@ -1,6 +1,6 @@
 public with sharing class UserAndRecordIds{
-    public Id userId;
-    public Set<Id> recordIds;
+    @AuraEnabled public Id userId;
+    @AuraEnabled public List<Id> recordIds;
     public static Map<Id, Set<Id>> convertToMap(List<UserAndRecordIds> userRecordList) {
 
         if (userRecordList == null)

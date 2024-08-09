@@ -1,9 +1,9 @@
 public with sharing class InvocableProvideAccess {
 
     @InvocableMethod(label='Provide Access' description='Provides access to records to the specified users.' category='Programatic Record Access Management')
-    public static List<String> provideAccess(List<AMC_ProvideAccessRequest> inputList) {
+    public static List<AMC_ProvideAccessResult> provideAccess(List<AMC_ProvideAccessRequest> inputList) {
 
-        List<String> errors = new List<String>(); 
+        List<AMC_ProvideAccessResult> errors = new List<AMC_ProvideAccessResult>(); 
         ApexManagedSharingUtility apexSharingUtility = ApexManagedSharingUtility.getInstance() ;
 
         for (AMC_ProvideAccessRequest req : inputList) {
@@ -11,12 +11,16 @@ public with sharing class InvocableProvideAccess {
             if( req.nameOfObject.equalsIgnoreCase('Account') ) {
                 success = apexSharingUtility.buildAccountShareRecords(req.accessLevel,req.caseAccessLevel, req.opportunityAccessLevel , req.contactAccessLevel , UserAndRecordIds.convertToMap(req.userAndRecordIdsList));
                 if ( !success) {
-                    errors.add('To provide account record access to users, parameters provided was invalid. Provide correct access levels that apply for case, contact etc and try again.');
+                    AMC_ProvideAccessResult errObj = new AMC_ProvideAccessResult();
+                    errObj.error = 'To provide account record access to users, parameters provided was invalid. Provide correct access levels that apply for case, contact etc and try again.';
+                    errors.add(errObj);
                 }
             } else {
                 success = apexSharingUtility.buildShareRecords(req.nameOfObject , req.rowCause, req.accessLevel , UserAndRecordIds.convertToMap(req.userAndRecordIdsList));
                 if ( !success) {
-                    errors.add('To provide ' + req.nameOfObject + ' record access to users, parameters provided was invalid.Ensure parametrer are not blank and object is configured in ApexManagedSharingSetting custom metadata.');
+                    AMC_ProvideAccessResult errObj = new AMC_ProvideAccessResult();
+                    errObj.error = 'To provide account record access to users, parameters provided was invalid. Provide correct access levels that apply for case, contact etc and try again.';
+                    errors.add(errObj);
                 } 
             }
         }
@@ -42,9 +46,14 @@ public with sharing class InvocableProvideAccess {
         public String opportunityAccessLevel;
         @InvocableVariable(label='Case Access level' required='false' description='Provide if Name of Object is Account, access must be greater than the default access of users')
         public String caseAccessLevel;
-        @InvocableVariable(label='Case Access level' required='false' description='Provide if Name of Object is Account, access must be greater than the default access of users')
+        @InvocableVariable(label='Contact Access level' required='false' description='Provide if Name of Object is Account, access must be greater than the default access of users')
         public String contactAccessLevel;
     }
+
+    public class AMC_ProvideAccessResult{
+        @InvocableVariable(label='Error' description='Details of errors encountered')
+        public String error;
+    }    
 
 
 }
