@@ -53,9 +53,9 @@ public inherited sharing class QueueableAMS_RevokeAccess implements Queueable{
             if( mapOfUserIdsAndRecordsForObject != null && mapOfUserIdsAndRecordsForObject.size() > 0 ) {
                 
                 Map <Id, Set<Id>> mapOfUserIdsAndRecordsToRevokeAccess =  trimMapAsPerChunkSize ( nameOfObject , mapOfUserIdsAndRecordsForObject );
-                ApexManagedSharingUtility apexSharingUtilityV2 = ApexManagedSharingUtility.getInstance();
-                apexSharingUtilityV2.addToListOfRecordsForRevokingAccess( nameOfObject , mapOfUserIdsAndRecordsToRevokeAccess );
-                apexSharingUtilityV2.revokeAccessForObject( nameOfObject , messageInCaseOfFailure );
+                ApexManagedSharingUtility apexSharingUtility = ApexManagedSharingUtility.getInstance();
+                apexSharingUtility.addToListOfRecordsForRevokingAccess( nameOfObject , mapOfUserIdsAndRecordsToRevokeAccess );
+                apexSharingUtility.revokeAccessForObject( nameOfObject , messageInCaseOfFailure );
             }
         }
         
