@@ -57,7 +57,6 @@ public without sharing class ApexManagedSharingUtility {
      * @param mapOfUserIdAndRecordIds A map containind User Ids of users that need access to records in respective Set<Id> 
      * NOTE: 
      */
-
     public boolean buildShareRecords( String apiNameOfObject , String rowCause , String accessLevel , Map<Id, Set<Id>> mapOfUserIdAndRecordIds) {
 
         //Perform Null checks
@@ -108,7 +107,6 @@ public without sharing class ApexManagedSharingUtility {
      * @param mapOfUserIdAndRecordIds A map containind User Ids of users that need access to records in respective Set<Id> 
      * NOTE: 
      */
-
     public boolean buildAccountShareRecords( String accountAccessLevel , String caseAccessLevel , String  opportunityAccessLevel , String  contactAccessLevel , Map<Id, Set<Id>> mapOfUserIdAndRecordIds) {
 
         if( String.isBlank(accountAccessLevel) || mapOfUserIdAndRecordIds == null || mapOfUserIdAndRecordIds.size() == 0 )
@@ -169,7 +167,6 @@ public without sharing class ApexManagedSharingUtility {
      * If this is FALSE then sharing of all record happens in sync mode always
      * 
      */
-
     public List<String> shareRecords(String messageInCaseOfFailure , Boolean smartshare) {
         if ( mapOfAllSharingRecordsToInsert == null || mapOfAllSharingRecordsToInsert.size() == 0 )
             return null;

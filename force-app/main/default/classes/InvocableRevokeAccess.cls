@@ -1,4 +1,5 @@
 public with sharing class InvocableRevokeAccess {
+
     @InvocableMethod(label='Revoke Access' description='Revoke access to records for specified users.' category='Programatic Record Access Management')
     public static List<AMC_RevokeAccessResult> revokeAccess(List<AMC_RevokeAccessRequest> inputList) {
         
@@ -9,7 +10,7 @@ public with sharing class InvocableRevokeAccess {
             Boolean success = apexSharingUtility.addToListOfRecordsForRevokingAccess(req.nameOfObject , UserAndRecordIds.convertToMap(req.userAndRecordIdsList));
             if ( !success) {
                 AMC_RevokeAccessResult errObj = new AMC_RevokeAccessResult();
-                errObj.error = 'To provide ' + req.nameOfObject + ' record access to users, parameters provided was invalid.Ensure parametrer are not blank and object is configured in ApexManagedSharingSetting custom metadata.';
+                errObj.error = 'To provide ' + req.nameOfObject + ' record access to users, parameters provided was invalid.Ensure inputs are not blank and object is configured in ApexManagedSharingSetting custom metadata.';
                 errors.add(errObj);
             } 
         }
