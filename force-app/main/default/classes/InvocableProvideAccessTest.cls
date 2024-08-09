@@ -51,9 +51,12 @@ public with sharing class InvocableProvideAccessTest {
 		request.userAndRecordIdsList = userAndRecordIdsList;
 		requestList.add(request);
 
-         request = new InvocableProvideAccess.AMC_ProvideAccessRequest();
+        request = new InvocableProvideAccess.AMC_ProvideAccessRequest();
 		request.nameOfObject = 'Account';
         request.accessLevel = 'Edit';
+        request.caseAccessLevel = 'Edit';
+        request.contactAccessLevel = 'Edit';
+        request.opportunityAccessLevel = 'Edit';
 		userAndRecordIdsList = new List<UserAndRecordIds>();
 
         userAndRecordIds = new UserAndRecordIds();
@@ -65,7 +68,8 @@ public with sharing class InvocableProvideAccessTest {
         Test.startTest();
             List<InvocableProvideAccess.AMC_ProvideAccessResult> errors = InvocableProvideAccess.provideAccess(requestList);
         Test.stopTest();
-        Assert.areEqual( true, errors == null, 'Providing access to Opportunity was successful');
+        System.debug(errors);
+        Assert.areEqual( true, errors == null || errors.size() == 0 , 'Providing access to Opportunity was successful');
 
 	}
     @isTest

@@ -131,8 +131,10 @@ public without sharing class ApexManagedSharingUtility {
                 SObject shareRec = shareObjectDetail.shareObjectType.newSObject();
                 shareRec.put('AccountId', recId);
                 shareRec.put('AccountAccessLevel', accountAccessLevel);
-                if (!accountAccessLevel.equalsIgnoreCase('ALL')) {
+                if (String.isNotBlank(caseAccessLevel)) {
                     shareRec.put('CaseAccessLevel', caseAccessLevel);
+                }
+                if (String.isNotBlank(opportunityAccessLevel)) {
                     shareRec.put('OpportunityAccessLevel', opportunityAccessLevel);
                 }
                 if (!OWD_CONTACT.equalsIgnoreCase('ControlledByParent')) {
@@ -170,10 +172,11 @@ public without sharing class ApexManagedSharingUtility {
      * 
      */
 
-    public void shareRecords(String messageInCaseOfFailure , Boolean smartshare) {
+    public List<String> shareRecords(String messageInCaseOfFailure , Boolean smartshare) {
         if ( mapOfAllSharingRecordsToInsert == null || mapOfAllSharingRecordsToInsert.size() == 0 )
-                return;
+            return null;
 
+        List<String> errors = new List<String>();
         if ( smartshare ) {
             Integer totalShareRecords = 0;
             for ( String key : mapOfAllSharingRecordsToInsert.keySet() ) {
@@ -186,7 +189,10 @@ public without sharing class ApexManagedSharingUtility {
             }
             else {
                 for ( String nameOfObject : mapOfAllSharingRecordsToInsert.keySet() ) {
-                    shareRecordsOfObject( nameOfObject , messageInCaseOfFailure );
+                    String error = shareRecordsOfObject( nameOfObject , messageInCaseOfFailure );
+                    if(String.isNotBlank(error)) {
+                        errors.add(error);
+                    }
                 }
             }            
         }
@@ -198,11 +204,14 @@ public without sharing class ApexManagedSharingUtility {
                     throw new ApexManagedSharingUtilityException('The number of records to share exceeds the permissimible limit of 10k (Governor limit of No. of records in DML per transaction). Please use the method shareRecordsInBulk instead.');
                 }   
                 for ( String nameOfObject : mapOfAllSharingRecordsToInsert.keySet() ) {
-                    shareRecordsOfObject( nameOfObject , messageInCaseOfFailure );
+                    String error = shareRecordsOfObject( nameOfObject , messageInCaseOfFailure );
+                    if(String.isNotBlank(error)) {
+                        errors.add(error);
+                    }
                 }  
         }
         mapOfAllSharingRecordsToInsert.clear();
-        
+        return errors;
     }
 
     /**
@@ -213,15 +222,15 @@ public without sharing class ApexManagedSharingUtility {
      * 
      */
 
-    public void shareRecordsOfObject( String nameOfObject , String messageInCaseOfFailureToShareRecords ) {
+    public String shareRecordsOfObject( String nameOfObject , String messageInCaseOfFailureToShareRecords ) {
         nameOfObject = nameOfObject.toLowerCase();
         List<SObject> shareRecords = mapOfAllSharingRecordsToInsert.get(nameOfObject) ;
         if( shareRecords == null || shareRecords.size() == 0 )
-            return;
+            return null;
         if ( shareRecords.size() > MAX_COUNT_OF_SHARE_RECORDS_TO_CREATE ) {
             throw new ApexManagedSharingUtilityException('The number of records to share exceeds the permissimible limit of 10k (Governor limit of No. of records in DML per transaction). Please use the method shareRecords with smartShare TRUE instead.');
         }   
-        provideAccess (shareRecords , 'Providing user access to records of '+nameOfObject+ '.'+messageInCaseOfFailureToShareRecords) ;   
+        return provideAccess (shareRecords , 'Providing user access to records of '+nameOfObject+ '.'+messageInCaseOfFailureToShareRecords) ;   
     }
 
     /**
@@ -473,14 +482,14 @@ public without sharing class ApexManagedSharingUtility {
      *  @param messageInCaseOfFailure  Message to be printed in failure emails
      */
 
-    public void provideAccess (List<SObject> accessRecords  , String messageIncaseOfFailure ) {
+    public String provideAccess (List<SObject> accessRecords  , String messageIncaseOfFailure ) {
 
         String subject = 'Record Access Management Utility-Error Notification '+ System.today().format();
         String body = 'Hi,\n\n';
-        Boolean sendErrorEmail = FALSE;
+        Boolean errorFound = FALSE;
 
         if ( accessRecords == null || accessRecords.size() > 10000 ) // Max no. of DML records in a transaction is 10000
-            return ;
+            return null;
 
         if(accessRecords != null && accessRecords.size() > 0 )  { 
             body +=       '    This email is to notify you of the errors encountered while sharing access to records for some users. '+ messageIncaseOfFailure +' \n\n'; 
@@ -492,8 +501,8 @@ public without sharing class ApexManagedSharingUtility {
                     System.debug('Successfully inserted record for ID: ' + res.getId());
                 }
                 else { System.debug('Error inserting record for: ' + res);
-                        if(!sendErrorEmail)
-                            sendErrorEmail = TRUE;
+                        if(!errorFound)
+                        errorFound = TRUE;
                         // Operation failed, so get all errors                
                         for(Database.Error err : res.getErrors()) {
                             body += ' Error - '+ err.getStatusCode() + ': ' + err.getMessage() + ' \n';          
@@ -502,13 +511,14 @@ public without sharing class ApexManagedSharingUtility {
                 }
             }
             try {
-                if(sendErrorEmail && APEX_MANAGED_SHARING_CONTROL_SETTING.Send_Failure_Emails__c ) {
+                if(errorFound && APEX_MANAGED_SHARING_CONTROL_SETTING.Send_Failure_Emails__c ) {
                     EmailService.sendPlainTextEmail(APEX_MANAGED_SHARING_CONTROL_SETTING.Email_Ids__c, subject, body);
                 }
             } catch(Exception ex) {
                 System.debug('Unexpected failure occurred while sending email: '+ ex.getMessage());
-            }                    
+            }                   
         }
+        return errorFound ? body : null; 
     }
 
     /**

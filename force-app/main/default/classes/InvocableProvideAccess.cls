@@ -27,9 +27,8 @@ public with sharing class InvocableProvideAccess {
         if(errors.size() > 0 ) {
             return errors;
         }
-        apexSharingUtility.shareRecords('Providing access to records for users via Provide Access-Apex Managed Sharing utility failed.',TRUE);
-        return null;
-
+        String jsonString =  JSON.serialize(apexSharingUtility.shareRecords('Providing access to records for users via Provide Access-Apex Managed Sharing utility failed.',TRUE));
+        return (List<AMC_ProvideAccessResult>) JSON.deserialize(jsonString, List<AMC_ProvideAccessResult>.class);   
     }
 
     public class AMC_ProvideAccessRequest{
