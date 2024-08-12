@@ -1,5 +1,10 @@
+/* Description: This class provides functionality to send emails
+ * Author: G Mahant (Davanti)
+ * Created Date: 15 Mar 22  
+ * Test : EmailServiceTest
+ */
+@SuppressWarning
 public inherited sharing class EmailService {
-
 
     public static List<Messaging.SendEmailResult> sendEmailToApexEmailNotificationAddress( String subject, String body) {
         try {

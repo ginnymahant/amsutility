@@ -1,3 +1,7 @@
+/* Description: This classes tests functionality of EmailService
+ * Author: G Mahant (Davanti)
+ * Created Date: 15 Mar 22  
+ */
 @isTest
 public class EmailServiceTest {
     private static final String EMAIL_ADDRESS = 'fluffyunicornX1@flytest123.com';

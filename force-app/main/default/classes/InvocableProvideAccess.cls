@@ -1,3 +1,10 @@
+/* Description: This class provides an invocable action for flows to provide users access to records of multiple objects. This invocable action works for bulk record access as well
+ e.g. If user/s need to be provided access to >10K records.
+ * Author: G Mahant (Davanti)
+ * Created Date: 12 Aug 24  
+ * Test : InvocableProvideAccessTest
+ */
+@SuppressWarning
 public with sharing class InvocableProvideAccess {
 
     @InvocableMethod(label='Provide Access' description='Provides access to records to the specified users.' category='Programatic Record Access Management')

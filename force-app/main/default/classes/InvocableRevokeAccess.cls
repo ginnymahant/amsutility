@@ -1,3 +1,10 @@
+/* Description: This class provides an invocable action for flows to revoke access of users to records of multiple objects. This invocable action works for bulk record access as well
+ e.g. If user/s access to >10K records needs to be revoked.
+ * Author: G Mahant (Davanti)
+ * Created Date: 12 Aug 24  
+ * Test : InvocableProvideAccessTest
+ */
+@SuppressWarning
 public with sharing class InvocableRevokeAccess {
 
     @InvocableMethod(label='Revoke Access' description='Revoke access to records for specified users.' category='Programatic Record Access Management')

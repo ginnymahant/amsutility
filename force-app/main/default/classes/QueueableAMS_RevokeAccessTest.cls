@@ -1,3 +1,8 @@
+
+/* Description: This class tests functionality of QueueableAMS_RevokeAccess
+ * Author: G Mahant (Davanti)
+ * Created Date: 15 Mar 22  
+ */
 @isTest
 public with sharing class QueueableAMS_RevokeAccessTest {
 
@@ -36,7 +41,6 @@ public with sharing class QueueableAMS_RevokeAccessTest {
         shareRec.put('AccountAccessLevel','Edit');
         shareRec.put('OpportunityAccessLevel','Edit');
         shareRec.put('CaseAccessLevel','Edit');
-        //shareRec.put('ContactAccessLevel','Edit');
         shareRec.put('UserOrGroupId', userRec.Id);
         insert shareRec;
     }
