@@ -24,7 +24,7 @@ public inherited sharing class QueueableAMS_ProvideAccess implements Queueable{
         Boolean stopQueueableJobs = setting.Stop_Queueable_Jobs_For_Record_Sharing__c ;
 
         if( stopQueueableJobs )
-            return;
+            { return; }
         System.debug('The mapOfAllSharingRecordsToInsert  IS BEFORE SANITIZING = '+ mapOfAllSharingRecordsToInsert);
         santizeRecords();
         System.debug('The mapOfAllSharingRecordsToInsert  IS AFTER SANITIZING = '+ mapOfAllSharingRecordsToInsert);
@@ -72,10 +72,12 @@ public inherited sharing class QueueableAMS_ProvideAccess implements Queueable{
          
         for( String nameOfObject : mapOfAllSharingRecordsToInsert.keySet()) {
             ApexManagedShareObjects.GenericShareObject shareObjectDetail = apexShareObjects.getTheShareObjectDetailsForObjectName(nameOfObject);
-            if ( shareObjectDetail == null)
-                dirtyShare.add(nameOfObject);
-            if( shareObjectDetail != null && mapOfAllSharingRecordsToInsert.get( nameOfObject ) == null )
-                dirtyShare.add(nameOfObject);     
+            if ( shareObjectDetail == null) { 
+                dirtyShare.add(nameOfObject); 
+            }
+            if( shareObjectDetail != null && mapOfAllSharingRecordsToInsert.get( nameOfObject ) == null ) { 
+                dirtyShare.add(nameOfObject); 
+            }
         }
         //Remove records of object from mapOfAllSharingRecordsToInsert if the object has not been configured for sharing or the key in mapOfAllSharingRecordsToInsert is not having any data
         if(dirtyShare.size() > 0 ) {
@@ -94,7 +96,7 @@ public inherited sharing class QueueableAMS_ProvideAccess implements Queueable{
     private List<SObject> trimMapAsPerChunkSize( List<SObject> recordsToShare) {
         
         if(recordsToShare == null || recordsToShare.size() == 0 ) 
-            return null;
+            { return null; }
 
         Integer totalShareRecs = recordsToShare.size();
         List<SObject> shareRecsToInsert = new List<SObject>();
@@ -111,7 +113,7 @@ public inherited sharing class QueueableAMS_ProvideAccess implements Queueable{
             for ( Integer i = 0; i < totalShareRecs ; i++ )
             {
                 if(shareRecsToInsert.size() == COUNT_OF_RECS_TO_INSERT ) 
-                    break;   
+                    { break; }
                 
                 shareRecsToInsert.add(recordsToShare[i]);
                 Integer indexOfRecToRemove = recordsToShareTemp.indexOf(recordsToShare[i]);
@@ -120,11 +122,12 @@ public inherited sharing class QueueableAMS_ProvideAccess implements Queueable{
             recordsToShare.clear();
             recordsToShare.addAll(recordsToShareTemp);
                 
-            if( recordsToShare != null && recordsToShare.size() > 0)
+            if( recordsToShare != null && recordsToShare.size() > 0) {
                 mapOfAllSharingRecordsToInsert.put(nameOfObject , recordsToShare);
-            else 
+            } else { 
                 mapOfAllSharingRecordsToInsert.remove(nameOfObject);    
-            return  shareRecsToInsert;
+            }
+                return  shareRecsToInsert;
         }
         return null;                       
     }

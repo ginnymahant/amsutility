@@ -10,7 +10,7 @@ public with sharing class UserAndRecordIds{
     public static Map<Id, Set<Id>> convertToMap(List<UserAndRecordIds> userRecordList) {
 
         if (userRecordList == null)
-            return null;
+            { return null; }
 
         Map<Id, Set<Id>> userRecordMap = new Map<Id, Set<Id>>();
         for (UserAndRecordIds userRecord : userRecordList) {

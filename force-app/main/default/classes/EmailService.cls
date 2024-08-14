@@ -11,10 +11,8 @@ public inherited sharing class EmailService {
                 List<String> toAddresses = new List<String>();
                 for ( ApexEmailNotification emailAddress : [SELECT Id , Email, User.Email FROM ApexEmailNotification] )  {
 
-                    if( emailAddress.UserId == null )
-                        toAddresses.add(emailAddress.Email) ;
-                    else 
-                        toAddresses.add(emailAddress.User.Email) ;
+                    if( emailAddress.UserId == null ){ toAddresses.add(emailAddress.Email) ; }
+                    else { toAddresses.add(emailAddress.User.Email) ; }
                 }                  
                 
                 if(toAddresses.size() > 0 ) {

@@ -29,7 +29,7 @@ public inherited sharing class QueueableAMS_RevokeAccess implements Queueable{
         Boolean stopQueueableJobs = setting.Stop_Queueable_Jobs_For_Record_Sharing__c ;
 
         if( stopQueueableJobs )
-            return;
+            { return; }
         System.debug('The mapOfAllUserAccessDetailsPerObject  IS BEFORE SANITIZING = '+ mapOfAllUserAccessDetailsPerObject);
         santizeRecords();
         System.debug('The mapOfAllUserAccessDetailsPerObject  IS AFTER SANITIZING = '+ mapOfAllUserAccessDetailsPerObject);
@@ -78,10 +78,12 @@ public inherited sharing class QueueableAMS_RevokeAccess implements Queueable{
          
         for( String nameOfObject : mapOfAllUserAccessDetailsPerObject.keySet()) {
             ApexManagedShareObjects.GenericShareObject shareObjectDetail = apexShareObjects.getTheShareObjectDetailsForObjectName(nameOfObject);
-            if ( shareObjectDetail == null)
+            if ( shareObjectDetail == null) {
                 dirtyShare.add(nameOfObject);
-            if( shareObjectDetail != null && ( mapOfAllUserAccessDetailsPerObject.get( nameOfObject ) == null || mapOfAllUserAccessDetailsPerObject.get( nameOfObject ).size() == 0 ) )
+            }    
+            if( shareObjectDetail != null && ( mapOfAllUserAccessDetailsPerObject.get( nameOfObject ) == null || mapOfAllUserAccessDetailsPerObject.get( nameOfObject ).size() == 0 ) ) {
                 dirtyShare.add(nameOfObject);  
+            }    
         }
         //Remove records of object from mapOfAllUserAccessDetailsPerObject if the object has not been configured for sharing or the key in mapOfAllUserAccessDetailsPerObject is not having any data
         if(dirtyShare.size() > 0 ) {
@@ -100,7 +102,7 @@ public inherited sharing class QueueableAMS_RevokeAccess implements Queueable{
     private  Map <Id, Set<Id>> trimMapAsPerChunkSize(String nameOfObject ,  Map <Id, Set<Id>> mapOfUserIdsAndRecordsForAnObject ) {
         
         if( mapOfUserIdsAndRecordsForAnObject == null || mapOfUserIdsAndRecordsForAnObject.size() == 0 ) 
-            return null;
+            { return null; }
 
         Map <Id, Set<Id>> mapOfUserIdsAndRecordsToRevokeAccess = new  Map <Id, Set<Id>>(); 
         Integer countOfUserIds = 0 ;
@@ -123,8 +125,9 @@ public inherited sharing class QueueableAMS_RevokeAccess implements Queueable{
                     } 
                 }
             }
-            if ( mapOfAllUserAccessDetailsPerObject.get(nameOfObject).get(userId) == null || mapOfAllUserAccessDetailsPerObject.get(nameOfObject).get(userId).size() == 0 )
+            if ( mapOfAllUserAccessDetailsPerObject.get(nameOfObject).get(userId) == null || mapOfAllUserAccessDetailsPerObject.get(nameOfObject).get(userId).size() == 0 ) {
                 mapOfAllUserAccessDetailsPerObject.get(nameOfObject).remove( userId );
+            }    
         }
 
         return mapOfUserIdsAndRecordsToRevokeAccess ;                
