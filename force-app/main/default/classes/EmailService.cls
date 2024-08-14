@@ -6,26 +6,6 @@
 @SuppressWarnings('PMD.ApexCRUDViolation')
 public inherited sharing class EmailService {
 
-    public static List<Messaging.SendEmailResult> sendEmailToApexEmailNotificationAddress( String subject, String body) {
-        try {
-                List<String> toAddresses = new List<String>();
-                for ( ApexEmailNotification emailAddress : [SELECT Id , Email, User.Email FROM ApexEmailNotification] )  {
-
-                    if( emailAddress.UserId == null ){ toAddresses.add(emailAddress.Email) ; }
-                    else { toAddresses.add(emailAddress.User.Email) ; }
-                }                  
-                
-                if(toAddresses.size() > 0 ) {
-                    return sendEmail(toAddresses, subject, body);
-                 } else {
-                    throw new EmailServiceException('No email addresses found under Setup -> Apex Exception Notification');
-                }
-                
-        } catch (Exception ex) {
-            throw new EmailServiceException('Encountered error while sending Email to Apex Exception Email recepients. Exception-'+ ex.getMessage());
-        }
-    }
-
     public static List<Messaging.SendEmailResult> sendPlainTextEmail(String to, String subject, String body) {
         try {
             String[] toAddresses = to.split(',');

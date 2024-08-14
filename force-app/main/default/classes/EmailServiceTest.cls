@@ -42,17 +42,4 @@ public class EmailServiceTest {
         }
     }
 
-    @isTest
-    static void testSendEmailToApexEmailNotificationAddress() {
-        Messaging.SendEmailResult[] sendResults = null;
-        System.runAs(new User(Id = UserInfo.getUserId())) {
-            Test.startTest();
-            sendResults = EmailService.sendEmailToApexEmailNotificationAddress('Test Email Subject', 'This is a test email.');
-            Test.stopTest();
-        }
-
-        for (Messaging.SendEmailResult result : sendResults) {
-            System.assert(result.isSuccess(), 'Email should have been sent');
-        }
-    }
 }
