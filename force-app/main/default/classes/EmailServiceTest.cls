@@ -24,7 +24,7 @@ public class EmailServiceTest {
             } catch (EmailService.EmailServiceException exp) {
                 Assert.areEqual(true, String.isNotBlank(exp.getMessage()) , 'Error detection for blank To address works as expected.');
             }
-            Assert.areEqual(null, sendResults);
+            Assert.areEqual(null, sendResults , 'Email not sent as To address was missing');
         }
     }
 

@@ -3,7 +3,7 @@
  * Created Date: 15 Mar 22  
  * Test : ApexManagedSharingUtilTest
  */
-@SuppressWarnings
+@SuppressWarnings('PMD.CognitiveComplexity','PMD.FieldNamingConventions')
 public without sharing class ApexManagedSharingUtility {
 
     //Declare members

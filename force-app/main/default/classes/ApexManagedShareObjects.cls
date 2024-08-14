@@ -3,7 +3,7 @@
  * Created Date: 15 Mar 22  
  * Test : ApexManagedShareObjectTest
  */
-@SuppressWarnings
+@SuppressWarnings('PMD.ApexCRUDViolation')
 public with sharing class ApexManagedShareObjects {
 
     private static ApexManagedShareObjects instance = null;
@@ -55,10 +55,11 @@ public with sharing class ApexManagedShareObjects {
      * @return String  
     */
     private String returnNameOfShareObject (String sObjectName ) {
-        if ( sObjectName.endsWith('__c'))
+        if ( sObjectName.endsWith('__c')){
             return sObjectName.removeEnd('__c') + '__Share';
-        else 
-            return sObjectName +'Share';    
+        }else {
+            return sObjectName +'Share';  
+        } 
     }
     /**
      * @description Return the name of Id field in share object for sObjectName
@@ -66,10 +67,10 @@ public with sharing class ApexManagedShareObjects {
      * @return String  
     */
     private String returnNameOfIdField (String sObjectName ) {
-        if ( sObjectName.endsWith('__c'))
+        if ( sObjectName.endsWith('__c')){
             return 'ParentId';
-        else 
-            return sObjectName + 'Id';    
+        } else {
+            return sObjectName + 'Id';  }   
     }
     /**
      * @description Return the name of accesslevel field in share object for sObjectName
@@ -77,10 +78,11 @@ public with sharing class ApexManagedShareObjects {
      * @return String  
     */
     private String returnNameOfAccessLevelField (String sObjectName ) {
-        if ( sObjectName.endsWith('__c'))
+        if ( sObjectName.endsWith('__c')){
             return 'AccessLevel';
-        else 
-            return sObjectName + 'AccessLevel';    
+        }else { 
+            return sObjectName + 'AccessLevel';
+        }        
     }
 
     public class GenericShareObject {

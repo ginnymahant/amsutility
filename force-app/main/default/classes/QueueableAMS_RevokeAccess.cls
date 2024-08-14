@@ -5,7 +5,7 @@
  * Created Date: 15 Mar 22  
  * Test : QueueableAMS_RevokeAccessTest
  */
-@SuppressWarnings
+@SuppressWarnings('PMD.CognitiveComplexity')
 public inherited sharing class QueueableAMS_RevokeAccess implements Queueable{
     @TestVisible
     private Map <String , Map <Id, Set<Id>>> mapOfAllUserAccessDetailsPerObject = new Map <String , Map <Id, Set<Id>>> ();
@@ -35,10 +35,10 @@ public inherited sharing class QueueableAMS_RevokeAccess implements Queueable{
         System.debug('The mapOfAllUserAccessDetailsPerObject  IS AFTER SANITIZING = '+ mapOfAllUserAccessDetailsPerObject);
        
         if( mapOfAllUserAccessDetailsPerObject != null && mapOfAllUserAccessDetailsPerObject.size() > 0 ) {
-            Map <String , Map <Id, Set<Id>>> mapOfAllUserAccessDetailsPerObject_Temp = mapOfAllUserAccessDetailsPerObject ;
+            Map <String , Map <Id, Set<Id>>> mapOfAllUserAccessDetailsPerObjectTemp = mapOfAllUserAccessDetailsPerObject ;
             Map <Id, Set<Id>> mapOfUserIdsAndRecordsForObject ;
 
-            Set<String> objectNames = mapOfAllUserAccessDetailsPerObject_Temp.keySet() ;
+            Set<String> objectNames = mapOfAllUserAccessDetailsPerObjectTemp.keySet() ;
             if (String.isBlank(nameOfObject)) {
                 for ( String objName : objectNames ) {
                     nameOfObject = objName ;
@@ -48,7 +48,7 @@ public inherited sharing class QueueableAMS_RevokeAccess implements Queueable{
 
             //Get records of key: nameOfObject
             System.debug('BEFORE Revoking access of users for records of - '+nameOfObject);
-            mapOfUserIdsAndRecordsForObject = mapOfAllUserAccessDetailsPerObject_Temp.get(nameOfObject);
+            mapOfUserIdsAndRecordsForObject = mapOfAllUserAccessDetailsPerObjectTemp.get(nameOfObject);
 
             if( mapOfUserIdsAndRecordsForObject != null && mapOfUserIdsAndRecordsForObject.size() > 0 ) {
                 

@@ -3,7 +3,7 @@
  * Created Date: 15 Mar 22  
  * Test : EmailServiceTest
  */
-@SuppressWarnings
+@SuppressWarnings('PMD.ApexCRUDViolation')
 public inherited sharing class EmailService {
 
     public static List<Messaging.SendEmailResult> sendEmailToApexEmailNotificationAddress( String subject, String body) {
