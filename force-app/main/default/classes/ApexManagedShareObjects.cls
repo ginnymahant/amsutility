@@ -3,7 +3,7 @@
  * Created Date: 15 Mar 22  
  * Test : ApexManagedShareObjectTest
  */
-@SuppressWarning
+@SuppressWarnings
 public with sharing class ApexManagedShareObjects {
 
     private static ApexManagedShareObjects instance = null;

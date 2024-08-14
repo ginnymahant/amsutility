@@ -5,7 +5,7 @@
  * Created Date: 15 Mar 22  
  * Test : QueueableAMS_ProvideAccessTest
  */
-@SuppressWarning
+@SuppressWarnings
 public inherited sharing class QueueableAMS_ProvideAccess implements Queueable{
     @TestVisible
     private Map<String, List<Sobject>> mapOfAllSharingRecordsToInsert;

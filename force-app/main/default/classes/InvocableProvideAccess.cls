@@ -4,7 +4,7 @@
  * Created Date: 12 Aug 24  
  * Test : InvocableProvideAccessTest
  */
-@SuppressWarning
+@SuppressWarnings
 public with sharing class InvocableProvideAccess {
 
     @InvocableMethod(label='Provide Access' description='Provides access to records to the specified users.' category='Programatic Record Access Management')

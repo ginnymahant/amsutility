@@ -3,7 +3,7 @@
  * Created Date: 15 Mar 22  
  * Test : ApexManagedSharingUtilTest
  */
-@SuppressWarning
+@SuppressWarnings
 public without sharing class ApexManagedSharingUtility {
 
     //Declare members

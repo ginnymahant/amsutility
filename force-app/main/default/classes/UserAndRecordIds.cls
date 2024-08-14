@@ -3,7 +3,7 @@
  * Created Date: 15 Mar 22  
  * Test : 
  */
-@SuppressWarning
+@SuppressWarnings
 public with sharing class UserAndRecordIds{
     @AuraEnabled public Id userId;
     @AuraEnabled public List<Id> recordIds;

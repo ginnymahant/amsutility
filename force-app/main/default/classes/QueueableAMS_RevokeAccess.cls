@@ -5,7 +5,7 @@
  * Created Date: 15 Mar 22  
  * Test : QueueableAMS_RevokeAccessTest
  */
-@SuppressWarning
+@SuppressWarnings
 public inherited sharing class QueueableAMS_RevokeAccess implements Queueable{
     @TestVisible
     private Map <String , Map <Id, Set<Id>>> mapOfAllUserAccessDetailsPerObject = new Map <String , Map <Id, Set<Id>>> ();
